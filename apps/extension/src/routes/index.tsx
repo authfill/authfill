@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@ui/button";
+import browser from "webextension-polyfill";
 
 export const Route = createFileRoute("/")({
   component: RouteComponent,
@@ -8,8 +9,15 @@ export const Route = createFileRoute("/")({
 function RouteComponent() {
   return (
     <div className="p-20">
-      Welcome to AuthFill!
-      <Button>Hello, world!</Button>
+      <Button
+        onClick={() => {
+          browser.runtime.sendMessage(undefined, {
+            event: "listener.start",
+          });
+        }}
+      >
+        Start Listener
+      </Button>
     </div>
   );
 }

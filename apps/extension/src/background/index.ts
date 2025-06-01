@@ -1,4 +1,5 @@
 import { authenticateGoogle } from "@extension/background/auth/google";
+import { startListener } from "@extension/background/listener";
 import browser from "webextension-polyfill";
 
 // Listen for extension installation
@@ -21,6 +22,17 @@ browser.runtime.onMessageExternal.addListener(
     switch (payload.event) {
       case "auth.google":
         return await authenticateGoogle(payload.data, sender);
+    }
+
+    return Promise.resolve({ success: false, error: "Unknown event" });
+  },
+);
+
+browser.runtime.onMessage.addListener(
+  async (payload: any, sender: browser.Runtime.MessageSender) => {
+    switch (payload.event) {
+      case "listener.start":
+        return await startListener(sender);
     }
 
     return Promise.resolve({ success: false, error: "Unknown event" });

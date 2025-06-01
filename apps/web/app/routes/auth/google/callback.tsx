@@ -44,7 +44,8 @@ function RouteComponent() {
 
       const result = await sendMessage("auth.google", res.data);
       if (!result.success) return toast.error("Failed to save user");
-    } catch {
+    } catch (e) {
+      console.error(e);
       toast.error("Something went wrong! Please try again.");
     }
   }
