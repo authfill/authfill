@@ -10,6 +10,31 @@ app.get("/", (c) => {
   return c.text("We love AuthFill!");
 });
 
+app.post("/imap/test", async (c) => {
+  const data = await c.req.json();
+  const imap = new CFImap({
+    host: data.host,
+    port: data.port,
+    tls: data.tls,
+    auth: {
+      username: data.user,
+      password: data.password,
+    },
+  });
+
+  try {
+    await imap.connect();
+    await imap.logout();
+    return c.json({ success: true });
+  } catch (e: any) {
+    console.log("Error connecting to IMAP", e.message);
+    return c.json(
+      { error: "Error connecting to IMAP", message: e.message },
+      400,
+    );
+  }
+});
+
 app.get(
   "/imap",
   upgradeWebSocket(async (c) => {
@@ -29,7 +54,19 @@ app.get(
     return {
       async onMessage(event, ws) {
         async function connect() {
-          await imap.connect();
+          try {
+            await imap.connect();
+          } catch (e) {
+            console.log("Error connecting to IMAP", e);
+            ws.send(
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "Error connecting to IMAP",
+              }),
+            );
+            return;
+          }
           // check IDLE support
           const encoder = new TextEncoder();
           const decoder = new TextDecoder();
