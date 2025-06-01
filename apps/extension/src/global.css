@@ -1,0 +1,21 @@
+@import "tailwindcss";
+@source "../node_modules/ui";
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+@theme {
+  --color-primary: #a855f7;
+  --color-background: #0f172a;
+  --color-foreground: #f1f5f9;
+  --color-border: #64748b;
+}
+
+html {
+  @apply text-foreground;
+}
+
+body {
+  @apply bg-background;
+}
