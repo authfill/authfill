@@ -179,7 +179,7 @@ importers:
         specifier: ^9.1.0
         version: 9.1.0(eslint@8.57.1)
 
-  packages/typescript-config: {}
+  packages/typescript: {}
 
   packages/ui:
     dependencies:
@@ -199,9 +199,9 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
+      '@repo/typescript':
         specifier: workspace:*
-        version: link:../typescript-config
+        version: link:../typescript
       '@types/react':
         specifier: ^19.0.0
         version: 19.1.0
