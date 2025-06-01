@@ -15,12 +15,16 @@ app.get(
       user: c.req.header("IMAP-Username")!,
       password: c.req.header("IMAP-Password")!,
       host: c.req.header("IMAP-Host"),
-      port: 143,
+      port: 993,
       tls: true,
+      tlsOptions: {
+        port: 143,
+      },
     });
 
     imap.once("ready", function () {
       console.log("IMAP ready");
+
       imap.openBox("INBOX", true, (err, box) => {
         if (err) {
           console.log(err);
@@ -67,6 +71,16 @@ app.get(
         });
       });
     });
+
+    imap.once("error", function (err: any) {
+      console.log(err);
+    });
+
+    imap.once("end", function () {
+      console.log("Connection ended");
+    });
+
+    imap.connect();
 
     return {
       onMessage(event, ws) {
