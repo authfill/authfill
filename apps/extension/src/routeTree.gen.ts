@@ -11,20 +11,34 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as PopupImport } from './routes/popup'
 import { Route as IndexImport } from './routes/index'
+import { Route as SetupIndexImport } from './routes/setup/index'
+import { Route as SetupCustomImport } from './routes/setup/custom'
+import { Route as SetupCompleteImport } from './routes/setup/complete'
 
 // Create/Update Routes
-
-const PopupRoute = PopupImport.update({
-  id: '/popup',
-  path: '/popup',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SetupIndexRoute = SetupIndexImport.update({
+  id: '/setup/',
+  path: '/setup/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SetupCustomRoute = SetupCustomImport.update({
+  id: '/setup/custom',
+  path: '/setup/custom',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const SetupCompleteRoute = SetupCompleteImport.update({
+  id: '/setup/complete',
+  path: '/setup/complete',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -39,11 +53,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
-    '/popup': {
-      id: '/popup'
-      path: '/popup'
-      fullPath: '/popup'
-      preLoaderRoute: typeof PopupImport
+    '/setup/complete': {
+      id: '/setup/complete'
+      path: '/setup/complete'
+      fullPath: '/setup/complete'
+      preLoaderRoute: typeof SetupCompleteImport
+      parentRoute: typeof rootRoute
+    }
+    '/setup/custom': {
+      id: '/setup/custom'
+      path: '/setup/custom'
+      fullPath: '/setup/custom'
+      preLoaderRoute: typeof SetupCustomImport
+      parentRoute: typeof rootRoute
+    }
+    '/setup/': {
+      id: '/setup/'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupIndexImport
       parentRoute: typeof rootRoute
     }
   }
@@ -53,37 +81,47 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/popup': typeof PopupRoute
+  '/setup/complete': typeof SetupCompleteRoute
+  '/setup/custom': typeof SetupCustomRoute
+  '/setup': typeof SetupIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/popup': typeof PopupRoute
+  '/setup/complete': typeof SetupCompleteRoute
+  '/setup/custom': typeof SetupCustomRoute
+  '/setup': typeof SetupIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
-  '/popup': typeof PopupRoute
+  '/setup/complete': typeof SetupCompleteRoute
+  '/setup/custom': typeof SetupCustomRoute
+  '/setup/': typeof SetupIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/popup'
+  fullPaths: '/' | '/setup/complete' | '/setup/custom' | '/setup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/popup'
-  id: '__root__' | '/' | '/popup'
+  to: '/' | '/setup/complete' | '/setup/custom' | '/setup'
+  id: '__root__' | '/' | '/setup/complete' | '/setup/custom' | '/setup/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  PopupRoute: typeof PopupRoute
+  SetupCompleteRoute: typeof SetupCompleteRoute
+  SetupCustomRoute: typeof SetupCustomRoute
+  SetupIndexRoute: typeof SetupIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  PopupRoute: PopupRoute,
+  SetupCompleteRoute: SetupCompleteRoute,
+  SetupCustomRoute: SetupCustomRoute,
+  SetupIndexRoute: SetupIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -97,14 +135,22 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/popup"
+        "/setup/complete",
+        "/setup/custom",
+        "/setup/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
-    "/popup": {
-      "filePath": "popup.tsx"
+    "/setup/complete": {
+      "filePath": "setup/complete.tsx"
+    },
+    "/setup/custom": {
+      "filePath": "setup/custom.tsx"
+    },
+    "/setup/": {
+      "filePath": "setup/index.tsx"
     }
   }
 }

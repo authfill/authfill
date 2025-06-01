@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "composite": false,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "declarationMap": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
@@ -16,13 +16,15 @@
     "preserveWatchOutput": true,
     "skipLibCheck": true,
     "strict": true,
-    "rootDir": "../../",
+    "rootDir": "../..",
+    "baseUrl": "../..",
     "paths": {
-      "@app/*": ["../../apps/app/src/*"],
-      "@api/*": ["../../apps/api/src/*"],
-      "@db/*": ["../../packages/db/src/*"],
-      "@db": ["../../packages/db/src/index.ts"],
-      "@ui/*": ["../../packages/ui/src/*"]
+      "@ui/*": ["./packages/ui/src/*"],
+      "@hooks/*": ["./packages/hooks/src/*"],
+      "@conf/*": ["./packages/conf/src/*"],
+      "@extension/*": ["./apps/extension/src/*"],
+      "@web/*": ["./apps/web/*"],
+      "@proxy/*": ["./apps/proxy/src/*"]
     }
   },
   "exclude": ["node_modules"]

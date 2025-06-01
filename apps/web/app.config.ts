@@ -1,13 +1,14 @@
 // app.config.ts
+import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "@tanstack/react-start/config";
-import tsConfigPaths from "vite-tsconfig-paths";
+import { config } from "dotenv";
+import alias from "vite-tsconfig-paths";
+
+config({ path: "../../.env" });
 
 export default defineConfig({
   vite: {
-    plugins: [
-      tsConfigPaths({
-        projects: ["./tsconfig.json"],
-      }),
-    ],
+    plugins: [alias(), tailwindcss()],
+    envPrefix: ["PUBLIC_"],
   },
 });

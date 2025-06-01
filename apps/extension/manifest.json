@@ -9,12 +9,8 @@
     "type": "module"
   },
   "host_permissions": ["<all_urls>"],
-  "permissions": ["identity"],
-  "oauth2": {
-    "client_id": "481962670837-k0aq2gu1vn980t6a3kkv9h13igd7qd1b.apps.googleusercontent.com",
-    "scopes": [
-      "https://www.googleapis.com/auth/userinfo.email",
-      "https://www.googleapis.com/auth/gmail.readonly"
-    ]
+  "permissions": ["storage"],
+  "externally_connectable": {
+    "matches": ["https://*.authfill.com/*", "http://localhost:3000/*"]
   }
 }

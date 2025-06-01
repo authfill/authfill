@@ -1,19 +1,25 @@
 import { crx } from "@crxjs/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import { TanStackRouterVite as router } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
+import { config } from "dotenv";
 import { defineConfig } from "vite";
+import alias from "vite-tsconfig-paths";
 import manifest from "./manifest.json";
+
+config({ path: "../../.env" });
 
 export default defineConfig({
   plugins: [
-    TanStackRouterVite({ target: "react", autoCodeSplitting: true }),
+    router({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
+    alias(),
     crx({
       manifest,
     }),
   ],
+  envPrefix: ["PUBLIC_"],
   server: {
     port: 3001,
     strictPort: true,

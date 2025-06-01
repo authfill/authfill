@@ -1,12 +1,33 @@
+import { exchangeGoogleCode } from "@proxy/controller/auth/google/exchange";
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
+import { cors } from "hono/cors";
 import Imap from "imap";
 
-const app = new Hono();
+export type Env = {
+  PUBLIC_WEB_URL: string;
+  PUBLIC_GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_REDIRECT_URI: string;
+};
+
+export type Bindings = {
+  Bindings: Env;
+};
+
+const app = new Hono<Bindings>();
+
+app.use("*", async (c, next) => {
+  return cors({
+    origin: c.env.PUBLIC_WEB_URL,
+  })(c, next);
+});
 
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
+
+app.post("/auth/google", exchangeGoogleCode);
 
 app.get(
   "/imap",

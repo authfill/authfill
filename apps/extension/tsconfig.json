@@ -1,4 +1,5 @@
 {
+  "extends": "@authfill/typescript/vite.json",
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

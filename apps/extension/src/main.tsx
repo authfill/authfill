@@ -1,26 +1,21 @@
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
 import {
   RouterProvider,
   createHashHistory,
   createRouter,
 } from "@tanstack/react-router";
-import "./global.css";
-import "@fontsource/poppins/100.css";
-import "@fontsource/poppins/200.css";
-import "@fontsource/poppins/300.css";
-import "@fontsource/poppins/400.css";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/poppins/700.css";
-import "@fontsource/poppins/800.css";
-import "@fontsource/poppins/900.css";
-import "@fontsource/poppins/400-italic.css";
+import "@ui/styles/globals.css";
+import { NotFoundPage } from "@web/components/not-found";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 
 import { routeTree } from "./routeTree.gen";
 
 const history = createHashHistory();
-const router = createRouter({ routeTree, history });
+const router = createRouter({
+  routeTree,
+  history,
+  defaultNotFoundComponent: NotFoundPage,
+});
 
 declare module "@tanstack/react-router" {
   interface Register {

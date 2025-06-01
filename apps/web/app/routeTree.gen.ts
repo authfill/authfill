@@ -12,6 +12,10 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthGoogleRouteImport } from './routes/auth/google/route'
+import { Route as AuthGoogleIndexImport } from './routes/auth/google/index'
+import { Route as AuthGoogleMissingScopeImport } from './routes/auth/google/missing-scope'
+import { Route as AuthGoogleCallbackImport } from './routes/auth/google/callback'
 
 // Create/Update Routes
 
@@ -19,6 +23,30 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthGoogleRouteRoute = AuthGoogleRouteImport.update({
+  id: '/auth/google',
+  path: '/auth/google',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthGoogleIndexRoute = AuthGoogleIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthGoogleRouteRoute,
+} as any)
+
+const AuthGoogleMissingScopeRoute = AuthGoogleMissingScopeImport.update({
+  id: '/missing-scope',
+  path: '/missing-scope',
+  getParentRoute: () => AuthGoogleRouteRoute,
+} as any)
+
+const AuthGoogleCallbackRoute = AuthGoogleCallbackImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthGoogleRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -32,39 +60,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/auth/google': {
+      id: '/auth/google'
+      path: '/auth/google'
+      fullPath: '/auth/google'
+      preLoaderRoute: typeof AuthGoogleRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/google/callback': {
+      id: '/auth/google/callback'
+      path: '/callback'
+      fullPath: '/auth/google/callback'
+      preLoaderRoute: typeof AuthGoogleCallbackImport
+      parentRoute: typeof AuthGoogleRouteImport
+    }
+    '/auth/google/missing-scope': {
+      id: '/auth/google/missing-scope'
+      path: '/missing-scope'
+      fullPath: '/auth/google/missing-scope'
+      preLoaderRoute: typeof AuthGoogleMissingScopeImport
+      parentRoute: typeof AuthGoogleRouteImport
+    }
+    '/auth/google/': {
+      id: '/auth/google/'
+      path: '/'
+      fullPath: '/auth/google/'
+      preLoaderRoute: typeof AuthGoogleIndexImport
+      parentRoute: typeof AuthGoogleRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AuthGoogleRouteRouteChildren {
+  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
+  AuthGoogleMissingScopeRoute: typeof AuthGoogleMissingScopeRoute
+  AuthGoogleIndexRoute: typeof AuthGoogleIndexRoute
+}
+
+const AuthGoogleRouteRouteChildren: AuthGoogleRouteRouteChildren = {
+  AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
+  AuthGoogleMissingScopeRoute: AuthGoogleMissingScopeRoute,
+  AuthGoogleIndexRoute: AuthGoogleIndexRoute,
+}
+
+const AuthGoogleRouteRouteWithChildren = AuthGoogleRouteRoute._addFileChildren(
+  AuthGoogleRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth/google': typeof AuthGoogleRouteRouteWithChildren
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
+  '/auth/google/': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
+  '/auth/google': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/auth/google': typeof AuthGoogleRouteRouteWithChildren
+  '/auth/google/callback': typeof AuthGoogleCallbackRoute
+  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
+  '/auth/google/': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth/google'
+    | '/auth/google/callback'
+    | '/auth/google/missing-scope'
+    | '/auth/google/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth/google/callback'
+    | '/auth/google/missing-scope'
+    | '/auth/google'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/google'
+    | '/auth/google/callback'
+    | '/auth/google/missing-scope'
+    | '/auth/google/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthGoogleRouteRoute: typeof AuthGoogleRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthGoogleRouteRoute: AuthGoogleRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +177,32 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/auth/google"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/auth/google": {
+      "filePath": "auth/google/route.tsx",
+      "children": [
+        "/auth/google/callback",
+        "/auth/google/missing-scope",
+        "/auth/google/"
+      ]
+    },
+    "/auth/google/callback": {
+      "filePath": "auth/google/callback.tsx",
+      "parent": "/auth/google"
+    },
+    "/auth/google/missing-scope": {
+      "filePath": "auth/google/missing-scope.tsx",
+      "parent": "/auth/google"
+    },
+    "/auth/google/": {
+      "filePath": "auth/google/index.tsx",
+      "parent": "/auth/google"
     }
   }
 }
