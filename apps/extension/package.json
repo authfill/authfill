@@ -22,7 +22,7 @@
   "devDependencies": {
     "@crxjs/vite-plugin": "2.0.0-beta.33",
     "@eslint/js": "^9.21.0",
-    "@repo/eslint": "workspace:*",
+    "@authfill/eslint": "workspace:*",
     "@tanstack/react-router-devtools": "^1.115.0",
     "@tanstack/router-plugin": "^1.115.0",
     "@types/react": "^19.0.10",

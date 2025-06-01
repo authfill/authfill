@@ -9,8 +9,8 @@
     "lint": "eslint \"**/*.ts\""
   },
   "devDependencies": {
-    "@repo/eslint": "workspace:*",
-    "@repo/typescript": "workspace:*",
+    "@authfill/eslint": "workspace:*",
+    "@authfill/typescript": "workspace:*",
     "@types/react": "^19.0.0",
     "eslint": "^8.57.0",
     "typescript": "5.5.4"

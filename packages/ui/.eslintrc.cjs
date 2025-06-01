@@ -2,7 +2,7 @@
 module.exports = {
   root: true,
   ignorePatterns: [".eslintrc.cjs"],
-  extends: ["@repo/eslint/index.js"],
+  extends: ["@authfill/eslint/index.js"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     project: true,
