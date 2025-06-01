@@ -8,5 +8,13 @@
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
-  "host_permissions": ["<all_urls>"]
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["identity"],
+  "oauth2": {
+    "client_id": "481962670837-k0aq2gu1vn980t6a3kkv9h13igd7qd1b.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/userinfo.email",
+      "https://www.googleapis.com/auth/gmail.readonly"
+    ]
+  }
 }
