@@ -23,7 +23,6 @@ app.get(
 
     let isConnected = false;
     let isRealtime = false;
-    let isIdling = false;
 
     return {
       async onMessage(event, ws) {
@@ -74,7 +73,6 @@ app.get(
             const data = await imap.reader?.read();
             const decoded = data?.value ? decoder.decode(data.value) : "";
             if (decoded.includes("idling")) {
-              isIdling = true;
               ws.send(JSON.stringify({ status: "ok", revd: decoded }));
               const newEmailData = await imap.reader?.read();
               const newEmail = newEmailData?.value
@@ -92,10 +90,11 @@ app.get(
                     folder: "INBOX",
                     fetchBody: true,
                   });
+                  const rightMail = mail[mail.length - 1];
                   ws.send(
                     JSON.stringify({
                       status: "new-emails",
-                      email: mail[mail.length - 1],
+                      email: rightMail,
                       id: match[1],
                     }),
                   );
@@ -107,7 +106,6 @@ app.get(
                 continue;
               }
             } else {
-              isIdling = false;
               ws.send(
                 JSON.stringify({ status: "error", message: "Idling failed" }),
               );
