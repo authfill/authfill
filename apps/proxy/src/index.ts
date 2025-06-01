@@ -84,33 +84,18 @@ app.get(
               const match = regex.exec(newEmail);
               if (match) {
                 console.log("Found new email", match[1]);
-                await imap.logout();
-                console.log("Logged out");
-                // Reset socket to fix the IDLE bug
-                // TODO: Fix this and find a better solution instead of a full reconnect
-                // @ts-ignore
-                imap = null;
-                imap = new CFImap({
-                  host: c.req.header("IMAP-Host")!,
-                  port: Number(c.req.header("IMAP-Port")!),
-                  tls: c.req.header("IMAP-Secure") === "true",
-                  auth: {
-                    username: c.req.header("IMAP-User")!,
-                    password: c.req.header("IMAP-Password")!,
-                  },
-                });
-                await imap.connect();
+                await imap.writer?.write(encoder.encode("DONE\r\n"));
                 await imap.selectFolder("INBOX");
                 try {
                   const mail = await imap.fetchEmails({
-                    limit: [Number(match[1]) - 1, Number(match[1]) - 1],
+                    limit: [Number(match[1]), Number(match[1])],
                     folder: "INBOX",
                     fetchBody: true,
                   });
                   ws.send(
                     JSON.stringify({
                       status: "new-emails",
-                      email: mail,
+                      email: mail[mail.length - 1],
                       id: match[1],
                     }),
                   );
@@ -127,37 +112,6 @@ app.get(
                 JSON.stringify({ status: "error", message: "Idling failed" }),
               );
             }
-          }
-        }
-
-        if (event.data === "get-new-emails") {
-          if (!isConnected) {
-            ws.send(
-              JSON.stringify({ status: "error", message: "Not connected" }),
-            );
-            return;
-          }
-          if (isIdling) {
-            ws.send(
-              JSON.stringify({ status: "error", message: "Idling is ongoing" }),
-            );
-            return;
-          }
-          await imap.selectFolder("INBOX");
-          const sentSince = new Date();
-          sentSince.setMinutes(sentSince.getMinutes() - 10);
-          console.log(sentSince);
-          let searchedEmails = await imap.searchEmails({
-            deleted: false,
-            since: sentSince,
-          });
-          for (const email of searchedEmails) {
-            const e = await imap.fetchEmails({
-              limit: [email, email],
-              folder: "INBOX",
-              fetchBody: true,
-            });
-            ws.send(JSON.stringify(e));
           }
         }
       },
