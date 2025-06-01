@@ -1,6 +1,12 @@
 {
   "manifest_version": 3,
-  "name": "AuthFill Development Example",
+  "name": "AuthFill Development",
+  "description": "Verify your email with zero clicks.",
   "version": "1.0.0",
-  "action": { "default_popup": "index.html" }
+  "action": { "default_popup": "index.html" },
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "host_permissions": ["<all_urls>"]
 }

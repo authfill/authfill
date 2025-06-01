@@ -5,5 +5,5 @@ export const Route = createFileRoute("/popup")({
 });
 
 function RouteComponent() {
-  return <div className="p-20">Welcome to AuthFill!</div>;
+  return <div className="p-20">Welcome to the AuthFill Popup!</div>;
 }

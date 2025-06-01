@@ -1,5 +1,5 @@
 {
-  "name": "@repo/eslint-config",
+  "name": "@authfill/eslint",
   "version": "0.0.0",
   "main": "index.js",
   "license": "MIT",
