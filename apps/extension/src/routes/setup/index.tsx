@@ -1,7 +1,6 @@
 import { useGoogleAuth } from "@extension/hooks/auth/use-google-auth";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@ui/button";
-import { CogIcon } from "lucide-react";
 
 export const Route = createFileRoute("/setup/")({
   component: RouteComponent,
@@ -26,16 +25,11 @@ function RouteComponent() {
             <img src="/gmail.svg" className="mr-2 size-5" />
             Connect to Gmail
           </Button>
-          <Button
-            variant="secondary"
-            as="link"
-            to="/setup/custom"
-            className="w-full"
-            size="xl"
-          >
-            <CogIcon className="mr-2" />
-            Custom IMAP Server
-          </Button>
+          <div className="flex items-center gap-5">
+            <hr className="border-muted-foreground/50 w-full" />
+            <p className="text-muted-foreground text-sm">Or</p>
+            <hr className="border-muted-foreground/50 w-full" />
+          </div>
         </div>
       </div>
       <div className="mb-auto"></div>

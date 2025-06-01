@@ -1,7 +1,7 @@
 import { getStorage, setStorage } from "@extension/utils/storage";
 import browser from "webextension-polyfill";
 
-export async function authenticateGoogle(
+export async function authenticateCustom(
   data: {
     email: string;
     host: string;
@@ -28,11 +28,6 @@ export async function authenticateGoogle(
   });
 
   await setStorage("accounts", accounts);
-  if (sender.tab?.id) browser.tabs.remove(sender.tab.id);
-
-  browser.tabs.create({
-    url: chrome.runtime.getURL("index.html#/setup/complete"),
-  });
 
   return { success: true };
 }

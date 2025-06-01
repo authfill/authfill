@@ -1,5 +1,7 @@
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
+import { toast } from "sonner";
+import browser from "webextension-polyfill";
 import { z } from "zod";
 
 export const Route = createFileRoute("/setup/custom")({
@@ -7,6 +9,8 @@ export const Route = createFileRoute("/setup/custom")({
 });
 
 function RouteComponent() {
+  const navigate = Route.useNavigate();
+
   const form = useAppForm({
     defaultValues: {
       email: "",
@@ -26,10 +30,24 @@ function RouteComponent() {
         secure: z.boolean(),
       }),
     },
+    onSubmit: async ({ value }) => {
+      // TODO: Make this compatbile with Firefox
+      // Doesnt work with browser.runtime.sendMessage,
+      // but works with chrome.runtime.sendMessage
+      const res = (await browser.runtime.sendMessage({
+        event: "auth.custom",
+        data: value,
+      })) as { success: boolean };
+
+      if (!res?.success)
+        return toast.error("Something went wrong! Please try again.");
+
+      navigate({ to: "/setup/complete" });
+    },
   });
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center">
+    <div className="flex min-h-screen w-screen flex-col items-center py-12">
       <div className="mt-auto"></div>
       <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
         <h1 className="text-center text-4xl font-bold tracking-tight">
@@ -74,6 +92,9 @@ function RouteComponent() {
               />
             )}
           </form.AppField>
+          <form.AppField name="secure">
+            {(field) => <field.SwitchField label="Secure (TLS)" />}
+          </form.AppField>
           <form.AppField name="user">
             {(field) => (
               <field.TextField
@@ -86,9 +107,6 @@ function RouteComponent() {
             {(field) => (
               <field.PasswordField label="Password" placeholder="*******" />
             )}
-          </form.AppField>
-          <form.AppField name="secure">
-            {(field) => <field.SwitchField label="Secure (TLS)" />}
           </form.AppField>
           <form.AppForm>
             <form.SubmitButton className="mt-4">Submit</form.SubmitButton>

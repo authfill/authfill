@@ -1,3 +1,4 @@
+import { authenticateCustom } from "@extension/background/auth/custom";
 import { authenticateGoogle } from "@extension/background/auth/google";
 import { startListener } from "@extension/background/listener";
 import browser from "webextension-polyfill";
@@ -33,6 +34,8 @@ browser.runtime.onMessage.addListener(
     switch (payload.event) {
       case "listener.start":
         return await startListener(sender);
+      case "auth.custom":
+        return await authenticateCustom(payload.data, sender);
     }
 
     return Promise.resolve({ success: false, error: "Unknown event" });
