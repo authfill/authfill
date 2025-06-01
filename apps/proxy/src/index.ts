@@ -1,6 +1,8 @@
 import { CFImap } from "cf-imap";
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
+import { decodeQuotedPrintable } from "./utils/decode-quoted-printable";
+import { stripEmail } from "./utils/email-formatter";
 
 const app = new Hono();
 
@@ -41,11 +43,13 @@ app.get(
 
           ws.send(
             JSON.stringify({
+              type: "log",
               status: "ok",
               realtimeSupport: isRealtime,
             }),
           );
         }
+
         if (event.data === "connect") {
           connect();
           return;
@@ -54,18 +58,25 @@ app.get(
         if (event.data == "listen") {
           if (!isConnected) {
             ws.send(
-              JSON.stringify({ status: "error", message: "Not connected" }),
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "Not connected",
+              }),
             );
             return;
           }
           if (!isRealtime) {
             ws.send(
-              JSON.stringify({ status: "error", message: "Not connected" }),
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "Not connected",
+              }),
             );
             return;
           }
           while (true) {
-            if (!isConnected) await connect();
             await imap.selectFolder("INBOX");
             const encoder = new TextEncoder();
             const decoder = new TextDecoder();
@@ -81,28 +92,41 @@ app.get(
               const regex = /.*\* ([0-9]+) EXISTS.*/g;
               const match = regex.exec(newEmail);
               if (match) {
-                console.log("Found new email", match[1]);
                 await imap.writer?.write(encoder.encode("DONE\r\n"));
                 await imap.selectFolder("INBOX");
                 try {
-                  const mail = await imap.fetchEmails({
+                  const mails = await imap.fetchEmails({
                     limit: [Number(match[1]), Number(match[1])],
                     folder: "INBOX",
                     fetchBody: true,
                   });
-                  const rightMail = mail[mail.length - 1];
-                  ws.send(
-                    JSON.stringify({
-                      status: "new-emails",
-                      email: rightMail,
-                      id: match[1],
-                    }),
-                  );
+                  const mail = mails[mails.length - 1];
+                  if (mail) {
+                    console.log("Found new email", match[1]);
+                    console.log(mail);
+                    const stripped = stripEmail(mail.raw);
+                    console.log(stripped);
+                    ws.send(
+                      JSON.stringify({
+                        type: "email",
+                        email: {
+                          subject: mail.subject,
+                          to: mail.to,
+                          from: mail.from,
+                          text: stripped.plain
+                            ? decodeQuotedPrintable(stripped.plain)
+                            : null,
+                          html: stripped.html
+                            ? decodeQuotedPrintable(stripped.html)
+                            : null,
+                        },
+                      }),
+                    );
+                  }
                 } catch (e) {
                   console.log("Error fetching email", e);
                 }
               } else {
-                console.log("Could not parse ", newEmail);
                 continue;
               }
             } else {
