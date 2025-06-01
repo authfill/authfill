@@ -1,94 +1,170 @@
+import { CFImap } from "cf-imap";
 import { Hono } from "hono";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
-import Imap from "imap";
 
 const app = new Hono();
 
 app.get("/", (c) => {
-  return c.text("Hello Hono!");
+  return c.text("We love AuthFill!");
 });
 
 app.get(
   "/imap",
-  upgradeWebSocket((c) => {
-    const imap = new Imap({
-      user: c.req.header("IMAP-Username")!,
-      password: c.req.header("IMAP-Password")!,
-      host: c.req.header("IMAP-Host"),
-      port: 993,
-      tls: true,
-      tlsOptions: {
-        port: 143,
+  upgradeWebSocket(async (c) => {
+    let imap = new CFImap({
+      host: c.req.header("IMAP-Host")!,
+      port: Number(c.req.header("IMAP-Port")!),
+      tls: c.req.header("IMAP-Secure") === "true",
+      auth: {
+        username: c.req.header("IMAP-User")!,
+        password: c.req.header("IMAP-Password")!,
       },
     });
 
-    imap.once("ready", function () {
-      console.log("IMAP ready");
+    let isConnected = false;
+    let isRealtime = false;
+    let isIdling = false;
 
-      imap.openBox("INBOX", true, (err, box) => {
-        if (err) {
-          console.log(err);
+    return {
+      async onMessage(event, ws) {
+        async function connect() {
+          await imap.connect();
+          // check IDLE support
+          const encoder = new TextEncoder();
+          const decoder = new TextDecoder();
+          await imap.writer?.write(
+            encoder.encode("AUTHFILLINIT CAPABILITY\r\n"),
+          );
+          const data = await imap.reader?.read();
+          const decoded = data?.value ? decoder.decode(data.value) : "";
+          isConnected = true;
+          isRealtime = decoded.split(" ").includes("IDLE");
+
+          ws.send(
+            JSON.stringify({
+              status: "ok",
+              realtimeSupport: isRealtime,
+            }),
+          );
+        }
+        if (event.data === "connect") {
+          connect();
           return;
         }
 
-        const f = imap.seq.fetch("1:3", {
-          bodies: "HEADER.FIELDS (FROM TO SUBJECT DATE)",
-          struct: true,
-        });
-
-        f.on("message", function (msg, seqno) {
-          console.log("Message #%d", seqno);
-          var prefix = "(#" + seqno + ") ";
-          msg.on("body", function (stream, info) {
-            var buffer = "";
-            stream.on("data", function (chunk) {
-              buffer += chunk.toString("utf8");
-            });
-            stream.once("end", function () {
-              console.log(
-                prefix + "Parsed header: %s",
-                Imap.parseHeader(buffer),
+        if (event.data == "listen") {
+          if (!isConnected) {
+            ws.send(
+              JSON.stringify({ status: "error", message: "Not connected" }),
+            );
+            return;
+          }
+          if (!isRealtime) {
+            ws.send(
+              JSON.stringify({ status: "error", message: "Not connected" }),
+            );
+            return;
+          }
+          while (true) {
+            if (!isConnected) await connect();
+            await imap.selectFolder("INBOX");
+            const encoder = new TextEncoder();
+            const decoder = new TextDecoder();
+            await imap.writer?.write(encoder.encode("AUTHFILLIDLE IDLE\r\n"));
+            const data = await imap.reader?.read();
+            const decoded = data?.value ? decoder.decode(data.value) : "";
+            if (decoded.includes("idling")) {
+              isIdling = true;
+              ws.send(JSON.stringify({ status: "ok", revd: decoded }));
+              const newEmailData = await imap.reader?.read();
+              const newEmail = newEmailData?.value
+                ? decoder.decode(newEmailData.value)
+                : "";
+              const regex = /.*\* ([0-9]+) EXISTS.*/g;
+              const match = regex.exec(newEmail);
+              if (match) {
+                console.log("Found new email", match[1]);
+                await imap.logout();
+                console.log("Logged out");
+                // Reset socket to fix the IDLE bug
+                // TODO: Fix this and find a better solution instead of a full reconnect
+                // @ts-ignore
+                imap = null;
+                imap = new CFImap({
+                  host: c.req.header("IMAP-Host")!,
+                  port: Number(c.req.header("IMAP-Port")!),
+                  tls: c.req.header("IMAP-Secure") === "true",
+                  auth: {
+                    username: c.req.header("IMAP-User")!,
+                    password: c.req.header("IMAP-Password")!,
+                  },
+                });
+                await imap.connect();
+                await imap.selectFolder("INBOX");
+                try {
+                  const mail = await imap.fetchEmails({
+                    limit: [Number(match[1]) - 1, Number(match[1]) - 1],
+                    folder: "INBOX",
+                    fetchBody: true,
+                  });
+                  ws.send(
+                    JSON.stringify({
+                      status: "new-emails",
+                      email: mail,
+                      id: match[1],
+                    }),
+                  );
+                } catch (e) {
+                  console.log("Error fetching email", e);
+                }
+              } else {
+                console.log("Could not parse ", newEmail);
+                continue;
+              }
+            } else {
+              isIdling = false;
+              ws.send(
+                JSON.stringify({ status: "error", message: "Idling failed" }),
               );
+            }
+          }
+        }
+
+        if (event.data === "get-new-emails") {
+          if (!isConnected) {
+            ws.send(
+              JSON.stringify({ status: "error", message: "Not connected" }),
+            );
+            return;
+          }
+          if (isIdling) {
+            ws.send(
+              JSON.stringify({ status: "error", message: "Idling is ongoing" }),
+            );
+            return;
+          }
+          await imap.selectFolder("INBOX");
+          const sentSince = new Date();
+          sentSince.setMinutes(sentSince.getMinutes() - 10);
+          console.log(sentSince);
+          let searchedEmails = await imap.searchEmails({
+            deleted: false,
+            since: sentSince,
+          });
+          for (const email of searchedEmails) {
+            const e = await imap.fetchEmails({
+              limit: [email, email],
+              folder: "INBOX",
+              fetchBody: true,
             });
-          });
-
-          msg.once("attributes", function (attrs) {
-            console.log(prefix + "Attributes: %s", attrs, false, 8);
-          });
-
-          msg.once("end", function () {
-            console.log(prefix + "Finished");
-          });
-        });
-
-        f.once("error", function (err) {
-          console.log("Fetch error: " + err);
-        });
-
-        f.once("end", function () {
-          console.log("Done fetching all messages!");
-          imap.end();
-        });
-      });
-    });
-
-    imap.once("error", function (err: any) {
-      console.log(err);
-    });
-
-    imap.once("end", function () {
-      console.log("Connection ended");
-    });
-
-    imap.connect();
-
-    return {
-      onMessage(event, ws) {
-        console.log(`Message from client: ${event.data}`);
-        ws.send("Hello from server!");
+            ws.send(JSON.stringify(e));
+          }
+        }
       },
       onClose: () => {
-        console.log("Connection closed");
+        if (isConnected) {
+          imap.logout();
+        }
       },
     };
   }),
