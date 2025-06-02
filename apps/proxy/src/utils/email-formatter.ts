@@ -22,7 +22,7 @@ export function stripEmail(raw: string): StrippedContent {
   const withoutFetch = raw.replace(/^\*\s+\d+\s+FETCH[^\r\n]*\r?\n/, "");
 
   // Try to locate a boundary parameter in the headers:
-  const boundaryMatch = withoutFetch.match(/boundary="([^"]+)"/i);
+  const boundaryMatch = withoutFetch.match(/boundary="?([^"\s]+)("|\s)/i);
   if (boundaryMatch) {
     // ────────────────────────────────
     // CASE A: We found a boundary → extract multipart/alternative parts.
@@ -96,7 +96,7 @@ export function stripEmail(raw: string): StrippedContent {
       !/^<html/i.test(htmlPortion)
     ) {
       throw new Error(
-        "No boundary found and no standalone HTML payload detected.",
+        `No boundary found and no standalone HTML payload detected. Raw: ${raw}`,
       );
     }
 
