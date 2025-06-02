@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Loader } from "@ui/loader";
 import { useExtension } from "@web/hooks/use-extension";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth/google/callback")({
@@ -19,10 +19,15 @@ export const Route = createFileRoute("/auth/google/callback")({
 function RouteComponent() {
   const search = Route.useSearch();
   const navigate = Route.useNavigate();
+
+  const initialized = useRef(false);
   const { sendMessage } = useExtension();
 
   useEffect(() => {
     if (!search.scope) return;
+
+    if (initialized.current) return;
+    initialized.current = true;
 
     for (const scope of scopes) {
       if (search.scope.includes(scope)) continue;
@@ -31,7 +36,7 @@ function RouteComponent() {
     }
 
     exchange();
-  }, [search]);
+  }, [search, initialized]);
 
   async function exchange() {
     try {

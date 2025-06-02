@@ -1,5 +1,5 @@
 import { atom, useAtom } from "jotai";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import browser from "webextension-polyfill";
 
 const portAtom = atom<browser.Runtime.Port>(browser.runtime.connect());
@@ -9,15 +9,19 @@ export function usePortListener(
   callback: (data: any) => void,
   deps?: any[],
 ) {
+  const initialized = useRef(false);
   const [port] = useAtom(portAtom);
 
   useEffect(() => {
+    if (!port || initialized.current) return;
+    initialized.current = true;
+
     port.onMessage.addListener(onMessage as any);
 
     return () => {
       browser.runtime.onMessage.removeListener(onMessage as any);
     };
-  }, [port]);
+  }, [port, initialized]);
 
   const onMessage = useCallback(
     (request: {

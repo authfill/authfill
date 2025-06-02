@@ -5,27 +5,18 @@ import react from "@vitejs/plugin-react";
 import { config } from "dotenv";
 import { defineConfig } from "vite";
 import alias from "vite-tsconfig-paths";
-import manifest from "./manifest.json";
+import manifest from "./manifest.config";
 
 config({ path: "../../.env" });
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig({
   plugins: [
     router({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
     alias(),
     crx({
-      manifest: {
-        ...manifest,
-        host_permissions: [
-          mode == "development"
-            ? `${process.env.PUBLIC_EXTENSION_URL}/*`
-            : null,
-          `${process.env.PUBLIC_PROXY_URL}/*`,
-          "https://gmail.googleapis.com/*",
-        ].filter(Boolean) as string[],
-      },
+      manifest,
     }),
   ],
   envPrefix: ["PUBLIC_"],
@@ -39,4 +30,4 @@ export default defineConfig(({ mode }) => ({
   legacy: {
     skipWebSocketTokenCheck: true,
   },
-}));
+});

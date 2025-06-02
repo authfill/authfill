@@ -26,6 +26,8 @@ export async function checkEmails(emails: Email[]) {
           event: "otp.result",
           data: { code: secretCode },
         });
+
+        break;
       }
     }
   }

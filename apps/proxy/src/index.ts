@@ -17,11 +17,7 @@ type AppBindings = {
 
 const app = new Hono<AppBindings>();
 
-app.use("*", async (c, next) => {
-  return cors({
-    origin: c.env.PUBLIC_WEB_URL,
-  })(c, next);
-});
+app.use("*", cors({ origin: "*" }));
 
 app.post("/imap/test", testImapConnection);
 app.post("/auth/google", exchangeGoogleCode);

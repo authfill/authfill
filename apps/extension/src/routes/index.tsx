@@ -1,10 +1,12 @@
 import { Logo } from "@extension/components/logo";
+import { useBackground } from "@extension/hooks/use-background";
 import { useClipboard } from "@extension/hooks/use-clipboard";
 import { usePortListener } from "@extension/hooks/use-port-listener";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@ui/button";
 import { CopyIcon, InboxIcon, UsersIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import browser from "webextension-polyfill";
 
 export const Route = createFileRoute("/")({
@@ -13,7 +15,9 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const initialized = useRef(false);
+
   const { copyText } = useClipboard();
+  const { sendToBackground } = useBackground();
 
   const [code, setCode] = useState<string | null>(null);
 
@@ -28,8 +32,14 @@ function RouteComponent() {
   usePortListener(
     "otp.result",
     (data) => {
-      copyText(data.code);
       setCode(data.code);
+
+      copyText(data.code);
+
+      sendToBackground("notification.show", {
+        title: "Code copied to clipboard!",
+        message: "We've succesfully copied the code to your clipboard.",
+      });
     },
     [setCode, copyText],
   );
@@ -66,7 +76,15 @@ function RouteComponent() {
           <div className="flex flex-col items-center gap-2">
             <h1 className="text-muted-foreground">Found code:</h1>
             <p className="font-mono text-4xl font-bold">{code}</p>
-            <Button onClick={() => copyText(code)} className="mt-2">
+            <Button
+              onClick={() => {
+                copyText(code);
+                toast.success("Copied code to clipboard!", {
+                  position: "top-center",
+                });
+              }}
+              className="mt-2"
+            >
               <CopyIcon /> Copy
             </Button>
           </div>
