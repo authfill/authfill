@@ -16,17 +16,35 @@ export async function startListener(data: { popupId: string }) {
     if (account.type === "custom") {
       (async () => {
         const provider = new ImapProvider(account as CustomAccount);
+        const last3Messages = await provider.getLatestEmails(3);
+
+        for (const message of last3Messages) {
+          const secretCode = extractSecretCode(
+            message.text ? message.text : htmlToText(message.html),
+          );
+          if (secretCode) {
+            browser.runtime.sendMessage(undefined, {
+              event: "listener.result",
+              popupId: data.popupId,
+              data: { code: secretCode },
+            });
+            return;
+          }
+        }
+
         for await (const email of provider.listenForNewEmails()) {
-          console.log("new email", email);
+          console.log("[IMAP] New email received", email);
           const secretCode = extractSecretCode(
             email.text ? email.text : htmlToText(email.html),
           );
-
-          browser.runtime.sendMessage(undefined, {
-            event: "listener.result",
-            popupId: data.popupId,
-            data: { code: secretCode },
-          });
+          if (secretCode) {
+            browser.runtime.sendMessage(undefined, {
+              event: "listener.result",
+              popupId: data.popupId,
+              data: { code: secretCode },
+            });
+            return;
+          }
         }
       })();
     } else if (account.type === "google") {
@@ -36,18 +54,26 @@ export async function startListener(data: { popupId: string }) {
 
         for (const message of last3Messages) {
           const secretCode = extractSecretCode(message.text);
-
-          browser.runtime.sendMessage(undefined, {
-            event: "listener.result",
-            popupId: data.popupId,
-            data: { code: secretCode },
-          });
+          if (secretCode) {
+            browser.runtime.sendMessage(undefined, {
+              event: "listener.result",
+              popupId: data.popupId,
+              data: { code: secretCode },
+            });
+            return;
+          }
         }
 
         for await (const email of googleProvider.listenForNewEmails()) {
-          console.log("new email", email);
           const secretCode = extractSecretCode(email.text);
-          console.log("secret code", secretCode);
+          if (secretCode) {
+            browser.runtime.sendMessage(undefined, {
+              event: "listener.result",
+              popupId: data.popupId,
+              data: { code: secretCode },
+            });
+            return;
+          }
         }
       })();
     }

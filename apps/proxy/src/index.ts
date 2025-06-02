@@ -263,6 +263,13 @@ app.get(
               continue;
             }
           }
+          ws.send(
+            JSON.stringify({
+              type: "log",
+              status: "fetched-emails",
+              message: `Fetched emails successfully (${emails.length} from ${count})`,
+            }),
+          );
         }
       },
       onClose: () => {
