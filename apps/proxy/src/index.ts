@@ -60,22 +60,25 @@ app.post("/auth/google", exchangeGoogleCode);
 app.get(
   "/imap",
   upgradeWebSocket(async (c) => {
-    let imap = new CFImap({
-      host: c.req.header("IMAP-Host")!,
-      port: Number(c.req.header("IMAP-Port")!),
-      tls: c.req.header("IMAP-Secure") === "true",
-      auth: {
-        username: c.req.header("IMAP-User")!,
-        password: c.req.header("IMAP-Password")!,
-      },
-    });
-
+    let imap: CFImap | null = null;
     let isConnected = false;
     let isRealtime = false;
 
     return {
       async onMessage(event, ws) {
-        async function connect() {
+        const data = JSON.parse(event.data);
+
+        if (data.event === "connect") {
+          imap = new CFImap({
+            host: data.data.host,
+            port: data.data.port,
+            tls: data.data.secure,
+            auth: {
+              username: data.data.user,
+              password: data.data.password,
+            },
+          });
+
           try {
             await imap.connect();
           } catch (e) {
@@ -95,8 +98,8 @@ app.get(
           await imap.writer?.write(
             encoder.encode("AUTHFILLINIT CAPABILITY\r\n"),
           );
-          const data = await imap.reader?.read();
-          const decoded = data?.value ? decoder.decode(data.value) : "";
+          const imapData = await imap.reader?.read();
+          const decoded = imapData?.value ? decoder.decode(imapData.value) : "";
           isConnected = true;
           isRealtime = decoded.split(" ").includes("IDLE");
 
@@ -107,15 +110,11 @@ app.get(
               realtimeSupport: isRealtime,
             }),
           );
-        }
-
-        if (event.data === "connect") {
-          connect();
           return;
         }
 
-        if (event.data == "listen") {
-          if (!isConnected) {
+        if (data.event == "listen") {
+          if (!isConnected || !imap) {
             ws.send(
               JSON.stringify({
                 type: "log",
@@ -198,7 +197,9 @@ app.get(
       },
       onClose: () => {
         if (isConnected) {
-          imap.logout();
+          if (imap) {
+            imap.logout();
+          }
         }
       },
     };

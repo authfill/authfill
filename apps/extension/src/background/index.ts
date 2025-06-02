@@ -1,5 +1,6 @@
 import { authenticateCustom } from "@extension/background/auth/custom";
 import { authenticateGoogle } from "@extension/background/auth/google";
+import { startListener } from "@extension/background/listener";
 import browser from "webextension-polyfill";
 
 // Listen for extension installation
@@ -30,9 +31,9 @@ browser.runtime.onMessageExternal.addListener(
 
 browser.runtime.onMessage.addListener(
   async (payload: any, sender: browser.Runtime.MessageSender) => {
-    // TODO: Check sender origin(?)
-
     switch (payload.event) {
+      case "listener.start":
+        return await startListener(sender);
       case "auth.custom":
         return await authenticateCustom(payload.data);
     }

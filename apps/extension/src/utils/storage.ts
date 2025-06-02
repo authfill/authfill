@@ -1,31 +1,32 @@
 import browser from "webextension-polyfill";
 
+export interface GoogleAccount {
+  type: "google";
+  email: string;
+  name?: string;
+  avatar?: string;
+  credentials: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+  };
+}
+
+export interface CustomAccount {
+  type: "custom";
+  email: string;
+  credentials: {
+    type: "IMAP";
+    host: string;
+    port: number;
+    user: string;
+    password: string;
+    secure: boolean;
+  };
+}
+
 export interface Storage {
-  accounts: (
-    | {
-        type: "google";
-        email: string;
-        name?: string;
-        avatar?: string;
-        credentials: {
-          accessToken: string;
-          refreshToken: string;
-          expiresAt: number;
-        };
-      }
-    | {
-        type: "custom";
-        email: string;
-        credentials: {
-          type: "IMAP";
-          host: string;
-          port: number;
-          user: string;
-          password: string;
-          secure: boolean;
-        };
-      }
-  )[];
+  accounts: (GoogleAccount | CustomAccount)[];
 }
 
 export function setStorage<T extends keyof Storage>(key: T, data: Storage[T]) {

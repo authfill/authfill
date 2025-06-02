@@ -8,88 +8,98 @@ export interface StrippedContent {
 /**
  * stripEmail
  *
- * Takes a raw IMAP FETCH response string (including the IMAP wrapper and MIME multipart body),
- * finds the dynamically generated boundary, and returns an object with `plain` and `html`
- * bodies (either may be null if not present). This version tolerates extra headers
- * (e.g. Content-Transfer-Encoding) before the blank line.
+ * Takes a raw IMAP FETCH response string (including the IMAP wrapper and MIME multipart body).
+ * - If a multipart boundary is present, it extracts and returns the text/plain and text/html parts (either may be null).
+ * - If no boundary is found, it treats the entire body as a single HTML payload (returns it under `html`; `plain` stays null).
  *
  * @param raw - The raw IMAP FETCH response as a single string.
  * @returns An object containing `{ plain, html }`.
- * @throws If no boundary is found or the boundary‐delimited block cannot be extracted.
+ * @throws If neither a boundary nor any HTML payload can be found.
  */
 export function stripEmail(raw: string): StrippedContent {
-  // 1) Extract the boundary token from the Content-Type header:
-  const boundaryMatch = raw.match(/boundary="([^"]+)"/i);
-  if (!boundaryMatch) {
-    throw new Error("No boundary token found in the raw input.");
-  }
-  const boundary = boundaryMatch[1]; // e.g. "--_NmP-71e2dd92a018b7de-Part_1"
+  // First, strip off the IMAP FETCH wrapper line (e.g. "* 11836 FETCH (BODY[TEXT] {…}\n")
+  // so we only have the actual message content afterward.
+  const withoutFetch = raw.replace(/^\*\s+\d+\s+FETCH[^\r\n]*\r?\n/, "");
 
-  // 2) Build the opening and closing boundary strings:
-  const OPEN_BOUNDARY = `--${boundary}`; // e.g. "----_NmP-71e2dd92a018b7de-Part_1"
-  const CLOSING_BOUNDARY = `--${boundary}--`; // e.g. "----_NmP-71e2dd92a018b7de-Part_1--"
+  // Try to locate a boundary parameter in the headers:
+  const boundaryMatch = withoutFetch.match(/boundary="([^"]+)"/i);
+  if (boundaryMatch) {
+    // ────────────────────────────────
+    // CASE A: We found a boundary → extract multipart/alternative parts.
+    // ────────────────────────────────
+    const boundaryParam = boundaryMatch[1]; // e.g. "--_NmP-71e2dd92a018b7de-Part_1"
+    const openBoundary = `--${boundaryParam}`; // e.g. "----_NmP-71e2dd92a018b7de-Part_1"
+    const closingBoundary = `--${boundaryParam}--`; // e.g. "----_NmP-71e2dd92a018b7de-Part_1--"
 
-  // 3) Locate the first occurrence of the opening boundary:
-  const firstIdx = raw.indexOf(OPEN_BOUNDARY);
-  if (firstIdx === -1) {
-    throw new Error(`Opening boundary "${OPEN_BOUNDARY}" not found.`);
-  }
-
-  // 4) Locate the closing boundary (search from the first boundary onward):
-  const closingIdx = raw.indexOf(CLOSING_BOUNDARY, firstIdx);
-  if (closingIdx === -1) {
-    throw new Error(`Closing boundary "${CLOSING_BOUNDARY}" not found.`);
-  }
-
-  // 5) Slice out everything between the opening boundary and the closing boundary:
-  const twoPartsBlock = raw.slice(firstIdx, closingIdx).trim();
-  // Now twoPartsBlock contains something like:
-  // --<boundary>
-  // Content-Type: text/plain; charset="utf-8"
-  // Content-Transfer-Encoding: quoted-printable
-  //
-  // <plain-body>
-  //
-  // --<boundary>
-  // Content-Type: text/html; charset="utf-8"
-  // Content-Transfer-Encoding: quoted-printable
-  //
-  // <html-body>
-
-  // 6) Split on the same boundary to separate potential segments:
-  const rawSegments = twoPartsBlock
-    .split(OPEN_BOUNDARY)
-    .map((segment) => segment.trim())
-    .filter(Boolean);
-
-  // Initialize as null; set if found
-  let plain: string | null = null;
-  let html: string | null = null;
-
-  // 7) Helper: strip away all inner headers until the first blank line, then return the rest
-  function extractBody(segment: string): string | null {
-    // Look for the first empty line (\r?\n\r?\n), then capture everything after it
-    const m = segment.match(/\r?\n\r?\n([\s\S]*)$/);
-    if (!m) {
-      return null;
+    // Find the first occurrence of the opening delimiter
+    const firstIdx = withoutFetch.indexOf(openBoundary);
+    if (firstIdx === -1) {
+      throw new Error(`Opening boundary "${openBoundary}" not found.`);
     }
-    return m[1].trim();
-  }
 
-  // 8) For each segment, detect its Content-Type and extract its body
-  for (const segment of rawSegments) {
-    if (/Content-Type:\s*text\/plain/i.test(segment)) {
-      const body = extractBody(segment);
-      if (body !== null) {
-        plain = body;
-      }
-    } else if (/Content-Type:\s*text\/html/i.test(segment)) {
-      const body = extractBody(segment);
-      if (body !== null) {
-        html = body;
+    // Find the closing delimiter after that
+    const closingIdx = withoutFetch.indexOf(closingBoundary, firstIdx);
+    if (closingIdx === -1) {
+      throw new Error(`Closing boundary "${closingBoundary}" not found.`);
+    }
+
+    // Extract everything between openBoundary and closingBoundary (exclusive)
+    const twoPartsBlock = withoutFetch.slice(firstIdx, closingIdx).trim();
+    // Split on openBoundary to isolate each segment (plain vs HTML)
+    const rawSegments = twoPartsBlock
+      .split(openBoundary)
+      .map((seg) => seg.trim())
+      .filter(Boolean); // drop empty strings
+
+    let plain: string | null = null;
+    let html: string | null = null;
+
+    // Helper to strip all headers from a segment, returning the body after the first blank line
+    function extractBody(segment: string): string | null {
+      // look for the first blank line (\r\n\r\n or \n\n), then grab everything after
+      const m = segment.match(/\r?\n\r?\n([\s\S]*)$/);
+      return m ? m[1].trim() : null;
+    }
+
+    for (const segment of rawSegments) {
+      if (/Content-Type:\s*text\/plain/i.test(segment)) {
+        const body = extractBody(segment);
+        if (body !== null) plain = body;
+      } else if (/Content-Type:\s*text\/html/i.test(segment)) {
+        const body = extractBody(segment);
+        if (body !== null) html = body;
       }
     }
-  }
 
-  return { plain, html };
+    return { plain, html };
+  } else {
+    // ──────────────────────────────────
+    // CASE B: No multipart boundary → assume the entire payload is HTML.
+    // ──────────────────────────────────
+    // After removing the FETCH line, what remains begins with the HTML doctype or <html> tag.
+    // We need to strip off any trailing " BODY[HEADER.FIELDS…]" block if present.
+
+    // Find where the next "BODY[HEADER.FIELDS" starts (that marks the start of header metadata).
+    const headerFieldsIdx = withoutFetch.indexOf("BODY[HEADER.FIELDS");
+    let htmlPortion: string;
+    if (headerFieldsIdx !== -1) {
+      // Take only the substring before that metadata section
+      htmlPortion = withoutFetch.slice(0, headerFieldsIdx).trim();
+    } else {
+      // If no header‐fields marker, assume all of `withoutFetch` is HTML
+      htmlPortion = withoutFetch.trim();
+    }
+
+    // If what's left doesn’t look like HTML, throw an error
+    if (
+      !/^<!doctype\s+html/i.test(htmlPortion) &&
+      !/^<html/i.test(htmlPortion)
+    ) {
+      throw new Error(
+        "No boundary found and no standalone HTML payload detected.",
+      );
+    }
+
+    return { plain: null, html: htmlPortion };
+  }
 }
