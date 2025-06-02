@@ -13,6 +13,7 @@
     "@authfill/eslint": "workspace:*",
     "@authfill/typescript": "workspace:*",
     "@cloudflare/workers-types": "^4.20250601.0",
+    "@types/node": "^22.13.9",
     "wrangler": "^4.4.0"
   }
 }

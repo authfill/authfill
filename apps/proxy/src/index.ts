@@ -1,4 +1,5 @@
 import { exchangeGoogleCode } from "@proxy/controller/auth/google/exchange";
+import { refreshGoogleToken } from "@proxy/controller/auth/google/refresh";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { testImapConnection } from "./controller/imap/test";
@@ -11,7 +12,7 @@ export type Env = {
   GOOGLE_REDIRECT_URI: string;
 };
 
-type AppBindings = {
+export type AppBindings = {
   Bindings: Env;
 };
 
@@ -25,6 +26,7 @@ app.use("*", async (c, next) => {
 
 app.post("/imap/test", testImapConnection);
 app.post("/auth/google", exchangeGoogleCode);
+app.post("/auth/google/refresh", refreshGoogleToken);
 app.get("/imap", handleImapWebSocket);
 
 export default app;
