@@ -1,4 +1,5 @@
 import { Logo } from "@extension/components/logo";
+import { useAccounts } from "@extension/hooks/use-accounts";
 import { useBackground } from "@extension/hooks/use-background";
 import { useBackgroundListener } from "@extension/hooks/use-background-listener";
 import { createFileRoute } from "@tanstack/react-router";
@@ -27,8 +28,10 @@ function RouteComponent() {
     setCode(data.code);
   });
 
+  const { accounts } = useAccounts();
+
   return (
-    <div className="w-100 flex flex-col p-8">
+    <div className="w-100 flex flex-col p-7 pt-6">
       <div className="flex items-center justify-between">
         <Logo className="w-24" />
         <Button
@@ -48,7 +51,7 @@ function RouteComponent() {
             <p className="font-mono text-4xl font-bold">{code}</p>
           </div>
         ) : (
-          <h1 className="mb-4 text-center text-3xl font-bold">
+          <h1 className="mb-4 text-center text-3xl font-semibold">
             Waiting for
             <br />
             email to arrive

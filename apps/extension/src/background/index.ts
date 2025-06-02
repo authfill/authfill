@@ -1,3 +1,4 @@
+import { listAccounts } from "@extension/background/accounts/list";
 import { authenticateCustom } from "@extension/background/auth/custom";
 import { authenticateGoogle } from "@extension/background/auth/google";
 import { startListener } from "@extension/background/listener";
@@ -31,6 +32,8 @@ browser.runtime.onMessage.addListener(async (payload: any) => {
       return await startListener(payload.popupId);
     case "auth.custom":
       return await authenticateCustom(payload.data);
+    case "accounts.list":
+      return await listAccounts();
   }
 
   return Promise.resolve({ success: false, error: "Unknown event" });
