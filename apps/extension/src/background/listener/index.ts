@@ -11,6 +11,20 @@ import browser from "webextension-polyfill";
 
 export async function startListener(popupId: string) {
   const accounts = await getStorage("accounts");
+  const tabs = await browser.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  });
+  if (!tabs.length) {
+    return { error: "TAB_NOT_FOUND" };
+  }
+  const tab = tabs[0];
+
+  const url = new URL(tab.url || "");
+  console.log(url.protocol);
+  if (!["http:", "https:"].includes(url.protocol)) {
+    return { error: "TAB_NOT_SUPPORTED" };
+  }
 
   for (const account of accounts) {
     if (account.type === "custom") {
