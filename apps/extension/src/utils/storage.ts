@@ -1,8 +1,12 @@
 import browser from "webextension-polyfill";
 
-export interface GoogleAccount {
-  type: "google";
+export interface BaseAccountConfig {
+  id: string;
   email: string;
+}
+
+export interface GoogleAccountConfig extends BaseAccountConfig {
+  type: "google";
   name?: string;
   avatar?: string;
   credentials: {
@@ -12,9 +16,8 @@ export interface GoogleAccount {
   };
 }
 
-export interface CustomAccount {
+export interface CustomAccountConfig extends BaseAccountConfig {
   type: "custom";
-  email: string;
   credentials: {
     type: "IMAP";
     host: string;
@@ -25,8 +28,10 @@ export interface CustomAccount {
   };
 }
 
+export type AccountConfig = GoogleAccountConfig | CustomAccountConfig;
+
 export interface Storage {
-  accounts: (GoogleAccount | CustomAccount)[];
+  accounts: AccountConfig[];
 }
 
 export function setStorage<T extends keyof Storage>(key: T, data: Storage[T]) {

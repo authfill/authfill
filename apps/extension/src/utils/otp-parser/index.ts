@@ -4,7 +4,7 @@
  * @param emailBody - The full text of the email to scan for codes.
  * @returns The best-scoring code string, or null if no suitable code is found.
  */
-export function extractSecretCode(emailBody: string): string | null {
+export function extractOTPCode(emailBody: string): string | null {
   // Convert the entire email body to lowercase for keyword matching
   const lowerCaseEmailBody: string = emailBody.toLowerCase();
 
@@ -43,10 +43,6 @@ export function extractSecretCode(emailBody: string): string | null {
     /\b(?=.*\d)[-*A-Za-z0-9]{4,25}\b/g,
   );
   const codeCandidates: string[] = rawCodeCandidates ?? [];
-
-  if (codeCandidates.length > 0) {
-    console.log("Found code candidates:", codeCandidates);
-  }
 
   // Patterns to exclude obvious non-code strings (CSS values, dates, IPs, etc.)
   const exclusionPatterns: RegExp[] = [
@@ -129,6 +125,7 @@ export function extractSecretCode(emailBody: string): string | null {
     return { code: candidate, score };
   });
 
+  console.log("Scored canidates:", scoredCandidates);
   // Sort in descending order by score
   scoredCandidates.sort((a, b) => b.score - a.score);
 

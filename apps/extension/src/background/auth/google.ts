@@ -1,4 +1,6 @@
-import { getStorage, setStorage } from "@extension/utils/storage";
+import { addAccount } from "@extension/background/accounts";
+import { GoogleAccount } from "@extension/background/accounts/providers/google";
+import { id } from "@extension/utils/id";
 import browser from "webextension-polyfill";
 
 export async function authenticateGoogle(
@@ -12,21 +14,21 @@ export async function authenticateGoogle(
   },
   sender: browser.Runtime.MessageSender,
 ) {
-  const accounts = (await getStorage("accounts")) ?? [];
+  await addAccount(
+    new GoogleAccount({
+      id: id("acc"),
+      type: "google",
+      email: data.email,
+      name: data.name,
+      avatar: data.avatar,
+      credentials: {
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        expiresAt: data.expiresAt,
+      },
+    }),
+  );
 
-  accounts.push({
-    type: "google",
-    email: data.email,
-    name: data.name,
-    avatar: data.avatar,
-    credentials: {
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      expiresAt: data.expiresAt,
-    },
-  });
-
-  await setStorage("accounts", accounts);
   if (sender.tab?.id) browser.tabs.remove(sender.tab.id);
 
   browser.tabs.create({

@@ -1,13 +1,13 @@
-import { BaseProvider } from "@extension/background/listener/providers/base";
-import { GoogleAccount } from "@extension/utils/storage";
+import { checkEmails } from "@extension/background/utils/email";
+import { GoogleAccountConfig } from "@extension/utils/storage";
 import axios from "axios";
 
-export class GoogleProvider extends BaseProvider {
-  private account: GoogleAccount;
+export class GoogleAccount {
+  config: GoogleAccountConfig;
+  interval: NodeJS.Timeout | null = null;
 
-  constructor(account: GoogleAccount) {
-    super();
-    this.account = account;
+  constructor(account: GoogleAccountConfig) {
+    this.config = account;
   }
 
   /**
@@ -54,34 +54,19 @@ export class GoogleProvider extends BaseProvider {
     return result;
   }
 
-  async *listenForNewEmails() {
-    console.log("Listening for new emails");
-    const blacklist: string[] = [];
-    for (let i = 0; i < 60; i++) {
-      let emails = await this.getLatestEmails(1);
-      emails = emails.filter((email) => !blacklist.includes(email.id));
-      for (const email of emails) {
-        blacklist.push(email.id);
-        yield email;
-      }
-      // wait for 1 sec
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-
   /**
-   * Fetches the latest `count` Gmail messages using Axios and returns an array of objects
+   * Fetches the latest `count` Gmail emails using Axios and returns an array of objects
    * containing { subject, from, to, bodyHtml, bodyText }.
    */
   async getLatestEmails(count: number) {
-    const { accessToken } = this.account.credentials;
+    const { accessToken } = this.config.credentials;
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       Accept: "application/json",
     };
 
-    // 1. List the latest `count` messages (newest first by default)
-    const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${count}`;
+    // 1. List the latest `count` emails (newest first by default)
+    const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/emails?maxResults=${count}`;
     let listResponse;
     try {
       listResponse = await axios.get(listUrl, { headers });
@@ -89,11 +74,11 @@ export class GoogleProvider extends BaseProvider {
       const status = err.response?.status || "unknown";
       const text = err.response?.data || err.message;
       throw new Error(
-        `Failed to list messages: ${status} ${JSON.stringify(text)}`,
+        `Failed to list emails: ${status} ${JSON.stringify(text)}`,
       );
     }
 
-    const messages: Array<{ id: string }> = listResponse.data.messages || [];
+    const emails: Array<{ id: string }> = listResponse.data.emails || [];
     const results: Array<{
       id: string;
       subject: string;
@@ -104,7 +89,7 @@ export class GoogleProvider extends BaseProvider {
     }> = [];
 
     // 2. For each message ID, fetch full details and extract fields
-    for (const msg of messages) {
+    for (const msg of emails) {
       const getUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`;
       let msgResponse;
       try {
@@ -150,5 +135,42 @@ export class GoogleProvider extends BaseProvider {
     }
 
     return results;
+  }
+
+  async connect() {
+    if (this.interval)
+      return console.warn(`[${this.config.id}] Account already connected`);
+
+    const previousEmails = await this.getLatestEmails(5);
+    checkEmails(previousEmails);
+
+    const blacklist: string[] = previousEmails.map((email) => email.id);
+
+    this.interval = setInterval(async () => {
+      let emails = await this.getLatestEmails(1);
+      emails = emails.filter((email) => !blacklist.includes(email.id));
+
+      for (const email of emails) {
+        blacklist.push(email.id);
+      }
+
+      if (emails.length > 0) checkEmails(emails);
+    }, 1000);
+
+    console.info(`[${this.config.id}] Account connected`);
+  }
+
+  async disconnect() {
+    if (!this.interval)
+      return console.warn(`[${this.config.id}] Account already disconnected`);
+
+    clearInterval(this.interval);
+    this.interval = null;
+
+    console.info(`[${this.config.id}] Account disconnected`);
+  }
+
+  public toConfig() {
+    return this.config;
   }
 }

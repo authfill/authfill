@@ -1,4 +1,6 @@
-import { getStorage, setStorage } from "@extension/utils/storage";
+import { addAccount } from "@extension/background/accounts";
+import { CustomAccount } from "@extension/background/accounts/providers/custom";
+import { id } from "@extension/utils/id";
 import axios from "axios";
 
 export async function authenticateCustom(data: {
@@ -26,22 +28,21 @@ export async function authenticateCustom(data: {
     return { success: false };
   }
 
-  const accounts = (await getStorage("accounts")) ?? [];
-
-  accounts.push({
-    type: "custom",
-    email: data.email,
-    credentials: {
-      type: "IMAP",
-      host: data.host,
-      port: data.port,
-      user: data.user,
-      password: data.password,
-      secure: data.secure,
-    },
-  });
-
-  await setStorage("accounts", accounts);
+  await addAccount(
+    new CustomAccount({
+      id: id("acc"),
+      type: "custom",
+      email: data.email,
+      credentials: {
+        type: "IMAP",
+        host: data.host,
+        port: data.port,
+        user: data.user,
+        password: data.password,
+        secure: data.secure,
+      },
+    }),
+  );
 
   return { success: true };
 }
