@@ -15,7 +15,10 @@ export class ImapProvider extends BaseProvider {
 
   private initWebSocket(): Promise<boolean> {
     return new Promise((resolve) => {
-      if (this.ws) return;
+      if (this.ws) {
+        resolve(true);
+        return;
+      }
       this.ws = new WebSocket("ws://localhost:4000/imap");
       this.ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -56,6 +59,7 @@ export class ImapProvider extends BaseProvider {
     if (this.ws)
       this.ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
+        console.log("[IMAP] getLastestEmails", data);
         if (data.type === "log" && data.status === "fetched-emails") {
           if (resolveNext) {
             resolveNext({ value: null, done: true });
@@ -118,6 +122,7 @@ export class ImapProvider extends BaseProvider {
     // 3) Wrap the WebSocket's onmessage so that every email is pushed into `pending`
     this.ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log("[IMAP] listenForNewEmails", data);
       if (data.type === "email") {
         const email: GeneratorEmail = data.email;
 

@@ -17,6 +17,7 @@ export async function startListener(popupId: string) {
       (async () => {
         const provider = new ImapProvider(account as CustomAccount);
         const last3Messages = await provider.getLatestEmails(3);
+        console.log("[IMAP] Last 3 emails", last3Messages);
 
         for (const message of last3Messages) {
           const secretCode = extractSecretCode(
@@ -31,6 +32,8 @@ export async function startListener(popupId: string) {
             return;
           }
         }
+
+        console.log("[IMAP] Listening for new emails");
 
         for await (const email of provider.listenForNewEmails()) {
           console.log("[IMAP] New email received", email);
