@@ -13,8 +13,9 @@ export class ImapProvider extends BaseProvider {
   }
 
   async *listenForNewEmails() {
+    console.log("Listening for new emails");
     // 1) Create the WebSocket
-    const socket = new WebSocket("wss://proxy.authfill.com/imap");
+    const socket = new WebSocket("ws://localhost:4000/imap");
 
     // 2) Maintain an internal queue for incoming email events
     const pending: GeneratorEmail[] = [];
@@ -25,6 +26,10 @@ export class ImapProvider extends BaseProvider {
     // 3) Wrap the WebSocket's onmessage so that every email is pushed into `pending`
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log(data);
+      if (data.type === "log" && data.status === "ok") {
+        socket.send(JSON.stringify({ event: "listen" }));
+      }
       if (data.type === "email") {
         const email: GeneratorEmail = data.email;
 
@@ -64,7 +69,7 @@ export class ImapProvider extends BaseProvider {
           yield nextEmail;
         } else {
           // If the queue is empty, wait until onmessage pushes a new email
-          const nextEmailPromise = new Promise<IteratorResult<Email>>(
+          const nextEmailPromise = new Promise<IteratorResult<GeneratorEmail>>(
             (resolve) => {
               resolveNext = resolve;
             },
