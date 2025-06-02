@@ -18,16 +18,13 @@ export default defineConfig(({ mode }) => ({
     crx({
       manifest: {
         ...manifest,
-        ...(mode === "development"
-          ? {
-              host_permissions: [
-                `${process.env.PUBLIC_EXTENSION_URL}/*`,
-                `${process.env.PUBLIC_PROXY_URL}/*`,
-              ],
-            }
-          : {
-              host_permissions: [`${process.env.PUBLIC_PROXY_URL}/*`],
-            }),
+        host_permissions: [
+          mode == "development"
+            ? `${process.env.PUBLIC_EXTENSION_URL}/*`
+            : null,
+          `${process.env.PUBLIC_PROXY_URL}/*`,
+          "https://gmail.googleapis.com/*",
+        ].filter(Boolean) as string[],
       },
     }),
   ],

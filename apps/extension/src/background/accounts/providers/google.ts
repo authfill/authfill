@@ -66,7 +66,7 @@ export class GoogleAccount {
     };
 
     // 1. List the latest `count` emails (newest first by default)
-    const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/emails?maxResults=${count}`;
+    const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${count}`;
     let listResponse;
     try {
       listResponse = await axios.get(listUrl, { headers });
@@ -78,7 +78,7 @@ export class GoogleAccount {
       );
     }
 
-    const emails: Array<{ id: string }> = listResponse.data.emails || [];
+    const emails: Array<{ id: string }> = listResponse.data.messages || [];
     const results: Array<{
       id: string;
       subject: string;
