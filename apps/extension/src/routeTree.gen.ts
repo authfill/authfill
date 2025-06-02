@@ -11,12 +11,19 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as SetupRouteImport } from './routes/setup/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as SetupIndexImport } from './routes/setup/index'
 import { Route as SetupCustomImport } from './routes/setup/custom'
 import { Route as SetupCompleteImport } from './routes/setup/complete'
 
 // Create/Update Routes
+
+const SetupRouteRoute = SetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -25,21 +32,21 @@ const IndexRoute = IndexImport.update({
 } as any)
 
 const SetupIndexRoute = SetupIndexImport.update({
-  id: '/setup/',
-  path: '/setup/',
-  getParentRoute: () => rootRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => SetupRouteRoute,
 } as any)
 
 const SetupCustomRoute = SetupCustomImport.update({
-  id: '/setup/custom',
-  path: '/setup/custom',
-  getParentRoute: () => rootRoute,
+  id: '/custom',
+  path: '/custom',
+  getParentRoute: () => SetupRouteRoute,
 } as any)
 
 const SetupCompleteRoute = SetupCompleteImport.update({
-  id: '/setup/complete',
-  path: '/setup/complete',
-  getParentRoute: () => rootRoute,
+  id: '/complete',
+  path: '/complete',
+  getParentRoute: () => SetupRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -53,37 +60,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/setup': {
+      id: '/setup'
+      path: '/setup'
+      fullPath: '/setup'
+      preLoaderRoute: typeof SetupRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/setup/complete': {
       id: '/setup/complete'
-      path: '/setup/complete'
+      path: '/complete'
       fullPath: '/setup/complete'
       preLoaderRoute: typeof SetupCompleteImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof SetupRouteImport
     }
     '/setup/custom': {
       id: '/setup/custom'
-      path: '/setup/custom'
+      path: '/custom'
       fullPath: '/setup/custom'
       preLoaderRoute: typeof SetupCustomImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof SetupRouteImport
     }
     '/setup/': {
       id: '/setup/'
-      path: '/setup'
-      fullPath: '/setup'
+      path: '/'
+      fullPath: '/setup/'
       preLoaderRoute: typeof SetupIndexImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof SetupRouteImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface SetupRouteRouteChildren {
+  SetupCompleteRoute: typeof SetupCompleteRoute
+  SetupCustomRoute: typeof SetupCustomRoute
+  SetupIndexRoute: typeof SetupIndexRoute
+}
+
+const SetupRouteRouteChildren: SetupRouteRouteChildren = {
+  SetupCompleteRoute: SetupCompleteRoute,
+  SetupCustomRoute: SetupCustomRoute,
+  SetupIndexRoute: SetupIndexRoute,
+}
+
+const SetupRouteRouteWithChildren = SetupRouteRoute._addFileChildren(
+  SetupRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/setup': typeof SetupRouteRouteWithChildren
   '/setup/complete': typeof SetupCompleteRoute
   '/setup/custom': typeof SetupCustomRoute
-  '/setup': typeof SetupIndexRoute
+  '/setup/': typeof SetupIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -96,6 +127,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/setup': typeof SetupRouteRouteWithChildren
   '/setup/complete': typeof SetupCompleteRoute
   '/setup/custom': typeof SetupCustomRoute
   '/setup/': typeof SetupIndexRoute
@@ -103,25 +135,27 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/setup/complete' | '/setup/custom' | '/setup'
+  fullPaths: '/' | '/setup' | '/setup/complete' | '/setup/custom' | '/setup/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/setup/complete' | '/setup/custom' | '/setup'
-  id: '__root__' | '/' | '/setup/complete' | '/setup/custom' | '/setup/'
+  id:
+    | '__root__'
+    | '/'
+    | '/setup'
+    | '/setup/complete'
+    | '/setup/custom'
+    | '/setup/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  SetupCompleteRoute: typeof SetupCompleteRoute
-  SetupCustomRoute: typeof SetupCustomRoute
-  SetupIndexRoute: typeof SetupIndexRoute
+  SetupRouteRoute: typeof SetupRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  SetupCompleteRoute: SetupCompleteRoute,
-  SetupCustomRoute: SetupCustomRoute,
-  SetupIndexRoute: SetupIndexRoute,
+  SetupRouteRoute: SetupRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -135,22 +169,31 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
-        "/setup/complete",
-        "/setup/custom",
-        "/setup/"
+        "/setup"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/setup": {
+      "filePath": "setup/route.tsx",
+      "children": [
+        "/setup/complete",
+        "/setup/custom",
+        "/setup/"
+      ]
+    },
     "/setup/complete": {
-      "filePath": "setup/complete.tsx"
+      "filePath": "setup/complete.tsx",
+      "parent": "/setup"
     },
     "/setup/custom": {
-      "filePath": "setup/custom.tsx"
+      "filePath": "setup/custom.tsx",
+      "parent": "/setup"
     },
     "/setup/": {
-      "filePath": "setup/index.tsx"
+      "filePath": "setup/index.tsx",
+      "parent": "/setup"
     }
   }
 }

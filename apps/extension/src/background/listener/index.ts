@@ -9,10 +9,10 @@ import {
 import { htmlToText } from "html-to-text";
 import browser from "webextension-polyfill";
 
-export async function startListener(sender: browser.Runtime.MessageSender) {
+export async function startListener(data: { popupId: string }) {
   const accounts = await getStorage("accounts");
+
   for (const account of accounts) {
-    console.log(account);
     if (account.type === "custom") {
       (async () => {
         const provider = new ImapProvider(account as CustomAccount);
@@ -22,7 +22,11 @@ export async function startListener(sender: browser.Runtime.MessageSender) {
             email.text ? email.text : htmlToText(email.html),
           );
 
-          console.log("secret code", secretCode);
+          browser.runtime.sendMessage(undefined, {
+            event: "listener.result",
+            popupId: data.popupId,
+            data: { code: secretCode },
+          });
         }
       })();
     } else if (account.type === "google") {
@@ -31,9 +35,13 @@ export async function startListener(sender: browser.Runtime.MessageSender) {
         const last3Messages = await googleProvider.getLatestEmails(3);
 
         for (const message of last3Messages) {
-          console.log("new email", message);
           const secretCode = extractSecretCode(message.text);
-          console.log("secret code", secretCode);
+
+          browser.runtime.sendMessage(undefined, {
+            event: "listener.result",
+            popupId: data.popupId,
+            data: { code: secretCode },
+          });
         }
       })();
     }

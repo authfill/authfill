@@ -85,95 +85,89 @@ function RouteComponent() {
   }, [passwordRef, userRef, search]);
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center py-12">
-      <div className="mt-auto"></div>
-      <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
-        <h1 className="text-center text-4xl font-bold tracking-tight">
-          Email Settings
-        </h1>
-        <p className="text-muted-foreground mt-4 text-center text-sm">
-          Please enter your email credentials and settings. We will only store
-          this data on your machine.
-        </p>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit(e);
-          }}
-          className="mt-12 flex w-[18rem] flex-col gap-6"
-        >
-          <form.AppField name="email">
-            {(field) => (
-              <field.TextField
-                label="Email Address"
-                placeholder="john.pork@example.com"
-                type="email"
-                autoComplete="email"
-              />
-            )}
-          </form.AppField>
-          <form.AppField name="user">
-            {(field) => (
-              <field.TextField
-                ref={userRef}
-                label="Email Username"
-                placeholder="john.pork@example.com"
-              />
-            )}
-          </form.AppField>
-          <form.AppField name="password">
-            {(field) => (
-              <field.PasswordField
-                ref={passwordRef}
-                label="Email Password"
-                placeholder="*******"
-              />
-            )}
-          </form.AppField>
-          <button
-            type="button"
-            className="flex w-full cursor-pointer items-center justify-between"
-            onClick={() => setAdvanced((prev) => !prev)}
-          >
-            <span className="text-muted-foreground">
-              Show advanced settings
-            </span>
-            {advanced ? (
-              <MinusIcon className="text-muted-foreground size-4" />
-            ) : (
-              <PlusIcon className="text-muted-foreground size-4" />
-            )}
-          </button>
-          {advanced && (
-            <>
-              <form.AppField name="host">
-                {(field) => (
-                  <field.TextField
-                    label="IMAP Server Host"
-                    placeholder="imap.example.com"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="port">
-                {(field) => (
-                  <field.TextField
-                    label="IMAP Server Port"
-                    placeholder="993"
-                    type="number"
-                  />
-                )}
-              </form.AppField>
-              <form.AppField name="secure">
-                {(field) => <field.SwitchField label="Secure (TLS)" />}
-              </form.AppField>
-            </>
+    <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
+      <h1 className="text-center text-4xl font-bold tracking-tight">
+        Email Settings
+      </h1>
+      <p className="text-muted-foreground mt-4 text-center text-sm">
+        Please enter your email credentials and settings. We will only store
+        this data on your machine.
+      </p>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit(e);
+        }}
+        className="mt-12 flex w-[18rem] flex-col gap-6"
+      >
+        <form.AppField name="email">
+          {(field) => (
+            <field.TextField
+              label="Email Address"
+              placeholder="john.pork@example.com"
+              type="email"
+              autoComplete="email"
+            />
           )}
-          <form.AppForm>
-            <form.SubmitButton className="mt-2">Submit</form.SubmitButton>
-          </form.AppForm>
-        </form>
-      </div>
-      <div className="mb-auto"></div>
+        </form.AppField>
+        <form.AppField name="user">
+          {(field) => (
+            <field.TextField
+              ref={userRef}
+              label="Email Username"
+              placeholder="john.pork@example.com"
+            />
+          )}
+        </form.AppField>
+        <form.AppField name="password">
+          {(field) => (
+            <field.PasswordField
+              ref={passwordRef}
+              label="Email Password"
+              placeholder="*******"
+            />
+          )}
+        </form.AppField>
+        <button
+          type="button"
+          className="flex w-full cursor-pointer items-center justify-between"
+          onClick={() => setAdvanced((prev) => !prev)}
+        >
+          <span className="text-muted-foreground">Show advanced settings</span>
+          {advanced ? (
+            <MinusIcon className="text-muted-foreground size-4" />
+          ) : (
+            <PlusIcon className="text-muted-foreground size-4" />
+          )}
+        </button>
+        {advanced && (
+          <>
+            <form.AppField name="host">
+              {(field) => (
+                <field.TextField
+                  label="IMAP Server Host"
+                  placeholder="imap.example.com"
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="port">
+              {(field) => (
+                <field.TextField
+                  label="IMAP Server Port"
+                  placeholder="993"
+                  type="number"
+                />
+              )}
+            </form.AppField>
+            <form.AppField name="secure">
+              {(field) => <field.SwitchField label="Secure (TLS)" />}
+            </form.AppField>
+          </>
+        )}
+        <form.AppForm>
+          <form.SubmitButton className="mt-2">Submit</form.SubmitButton>
+        </form.AppForm>
+      </form>
     </div>
   );
 }

@@ -5,11 +5,7 @@ import browser from "webextension-polyfill";
 
 // Listen for extension installation
 browser.runtime.onInstalled.addListener((details) => {
-  if (
-    details.reason === "install" ||
-    // TODO: Remove this before release
-    details.reason === "update"
-  ) {
+  if (details.reason === "install") {
     browser.tabs.create({
       url: chrome.runtime.getURL("index.html#/setup"),
     });
@@ -29,15 +25,13 @@ browser.runtime.onMessageExternal.addListener(
   },
 );
 
-browser.runtime.onMessage.addListener(
-  async (payload: any, sender: browser.Runtime.MessageSender) => {
-    switch (payload.event) {
-      case "listener.start":
-        return await startListener(sender);
-      case "auth.custom":
-        return await authenticateCustom(payload.data);
-    }
+browser.runtime.onMessage.addListener(async (payload: any) => {
+  switch (payload.event) {
+    case "listener.start":
+      return await startListener(payload.data);
+    case "auth.custom":
+      return await authenticateCustom(payload.data);
+  }
 
-    return Promise.resolve({ success: false, error: "Unknown event" });
-  },
-);
+  return Promise.resolve({ success: false, error: "Unknown event" });
+});

@@ -89,54 +89,50 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center">
-      <div className="mt-auto"></div>
-      <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
-        <h1 className="text-center text-4xl font-bold tracking-tight">
-          Connect your email account
-        </h1>
-        <p className="text-muted-foreground mt-4 text-center text-sm">
-          To get started with AuthFill, please connect your email accounts with
-          the options shown below.
-        </p>
-        <div className="mt-12 flex w-full max-w-full flex-col gap-8 sm:max-w-[18rem]">
-          <Button
-            variant="secondary"
-            onClick={authenticateGoogle}
-            className="w-full"
-          >
-            <img src="/gmail.svg" className="mr-2 size-4" />
-            Connect to Gmail
-          </Button>
-          <div className="flex items-center gap-5">
-            <hr className="border-muted-foreground/50 w-full" />
-            <p className="text-muted-foreground text-sm">Or</p>
-            <hr className="border-muted-foreground/50 w-full" />
-          </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.handleSubmit(e);
-            }}
-            className="flex flex-col gap-4"
-          >
-            <form.AppField name="email">
-              {(field) => (
-                <field.TextField
-                  label="Email Address"
-                  placeholder="john.pork@example.com"
-                  type="email"
-                  autoComplete="email"
-                />
-              )}
-            </form.AppField>
-            <form.AppForm>
-              <form.SubmitButton>Connect</form.SubmitButton>
-            </form.AppForm>
-          </form>
+    <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
+      <h1 className="text-center text-4xl font-bold tracking-tight">
+        Connect your email account
+      </h1>
+      <p className="text-muted-foreground mt-4 text-center text-sm">
+        To get started with AuthFill, please connect your email accounts with
+        the options shown below.
+      </p>
+      <div className="mt-12 flex w-full max-w-full flex-col gap-8 sm:max-w-[18rem]">
+        <Button
+          variant="secondary"
+          onClick={authenticateGoogle}
+          className="w-full"
+        >
+          <img src="/gmail.svg" className="mr-2 size-4" />
+          Connect to Gmail
+        </Button>
+        <div className="flex items-center gap-5">
+          <hr className="border-muted-foreground/50 w-full" />
+          <p className="text-muted-foreground text-sm">Or</p>
+          <hr className="border-muted-foreground/50 w-full" />
         </div>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit(e);
+          }}
+          className="flex flex-col gap-4"
+        >
+          <form.AppField name="email">
+            {(field) => (
+              <field.TextField
+                label="Email Address"
+                placeholder="john.pork@example.com"
+                type="email"
+                autoComplete="email"
+              />
+            )}
+          </form.AppField>
+          <form.AppForm>
+            <form.SubmitButton>Connect</form.SubmitButton>
+          </form.AppForm>
+        </form>
       </div>
-      <div className="mb-auto"></div>
     </div>
   );
 }
