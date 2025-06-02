@@ -194,6 +194,76 @@ app.get(
             }
           }
         }
+        if (data.event == "fetch-emails") {
+          if (!isConnected || !imap) {
+            ws.send(
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "Not connected",
+              }),
+            );
+            return;
+          }
+
+          const count = data.data.count || 3;
+
+          const folder = await imap.selectFolder("INBOX");
+          const totalEmailCount = folder["emails"];
+
+          if (!totalEmailCount) {
+            ws.send(
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "No email key found while fetching emails",
+              }),
+            );
+            return;
+          }
+          if (totalEmailCount < count) {
+            ws.send(
+              JSON.stringify({
+                type: "log",
+                status: "error",
+                message: "Not enough emails in the folder",
+              }),
+            );
+            return;
+          }
+
+          const emails = await imap.fetchEmails({
+            limit: [totalEmailCount - count + 1, totalEmailCount],
+            folder: "INBOX",
+            fetchBody: true,
+          });
+
+          for (const email of emails) {
+            try {
+              const stripped = stripEmail(email.raw);
+              console.log("sending", stripped);
+              ws.send(
+                JSON.stringify({
+                  type: "email",
+                  email: {
+                    subject: email.subject,
+                    to: email.to,
+                    from: email.from,
+                    text: stripped.plain
+                      ? decodeQuotedPrintable(stripped.plain)
+                      : null,
+                    html: stripped.html
+                      ? decodeQuotedPrintable(stripped.html)
+                      : null,
+                  },
+                }),
+              );
+            } catch (e) {
+              console.log("Error stripping email", e);
+              continue;
+            }
+          }
+        }
       },
       onClose: () => {
         if (isConnected) {
