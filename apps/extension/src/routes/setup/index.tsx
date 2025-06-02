@@ -1,8 +1,8 @@
-import { useGoogleAuth } from "@extension/hooks/auth/use-google-auth";
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@ui/button";
 import axios from "axios";
+import { useCallback } from "react";
 import { xml2js } from "xml-js";
 import { z } from "zod";
 
@@ -11,7 +11,6 @@ export const Route = createFileRoute("/setup/")({
 });
 
 function RouteComponent() {
-  const { authenticateGoogle } = useGoogleAuth();
   const navigate = Route.useNavigate();
 
   const form = useAppForm({
@@ -87,6 +86,10 @@ function RouteComponent() {
       return;
     }
   }
+
+  const authenticateGoogle = useCallback(() => {
+    window.open(`${import.meta.env.PUBLIC_WEB_URL}/auth/google`);
+  }, []);
 
   return (
     <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">

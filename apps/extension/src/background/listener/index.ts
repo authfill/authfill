@@ -9,7 +9,7 @@ import {
 import { htmlToText } from "html-to-text";
 import browser from "webextension-polyfill";
 
-export async function startListener(data: { popupId: string }) {
+export async function startListener(popupId: string) {
   const accounts = await getStorage("accounts");
 
   for (const account of accounts) {
@@ -24,7 +24,7 @@ export async function startListener(data: { popupId: string }) {
 
           browser.runtime.sendMessage(undefined, {
             event: "listener.result",
-            popupId: data.popupId,
+            popupId: popupId,
             data: { code: secretCode },
           });
         }
@@ -39,7 +39,7 @@ export async function startListener(data: { popupId: string }) {
 
           browser.runtime.sendMessage(undefined, {
             event: "listener.result",
-            popupId: data.popupId,
+            popupId: popupId,
             data: { code: secretCode },
           });
         }
