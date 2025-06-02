@@ -8,8 +8,7 @@
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
-  "host_permissions": ["<all_urls>"],
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "tabs", "clipboardWrite"],
   "externally_connectable": {
     "matches": ["https://*.authfill.com/*", "http://localhost:3000/*"]
   }

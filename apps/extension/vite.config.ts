@@ -9,14 +9,26 @@ import manifest from "./manifest.json";
 
 config({ path: "../../.env" });
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     router({ target: "react", autoCodeSplitting: true }),
     react(),
     tailwindcss(),
     alias(),
     crx({
-      manifest,
+      manifest: {
+        ...manifest,
+        ...(mode === "development"
+          ? {
+              host_permissions: [
+                `${process.env.PUBLIC_EXTENSION_URL}/*`,
+                `${process.env.PUBLIC_PROXY_URL}/*`,
+              ],
+            }
+          : {
+              host_permissions: [`${process.env.PUBLIC_PROXY_URL}/*`],
+            }),
+      },
     }),
   ],
   envPrefix: ["PUBLIC_"],
@@ -30,4 +42,4 @@ export default defineConfig({
   legacy: {
     skipWebSocketTokenCheck: true,
   },
-});
+}));

@@ -1,9 +1,9 @@
 import { Logo } from "@extension/components/logo";
-import { useAccounts } from "@extension/hooks/use-accounts";
+import { useClipboard } from "@extension/hooks/use-clipboard";
 import { usePortListener } from "@extension/hooks/use-port-listener";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@ui/button";
-import { InboxIcon, UsersIcon } from "lucide-react";
+import { CopyIcon, InboxIcon, UsersIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import browser from "webextension-polyfill";
 
@@ -13,6 +13,8 @@ export const Route = createFileRoute("/")({
 
 function RouteComponent() {
   const initialized = useRef(false);
+  const { copyText } = useClipboard();
+
   const [code, setCode] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,14 +25,17 @@ function RouteComponent() {
     initialized.current = true;
   }, []);
 
-  usePortListener("otp.result", (data) => {
-    setCode(data.code);
-  });
-
-  const { accounts } = useAccounts();
+  usePortListener(
+    "otp.result",
+    (data) => {
+      copyText(data.code);
+      setCode(data.code);
+    },
+    [setCode, copyText],
+  );
 
   return (
-    <div className="w-100 flex flex-col p-7 pt-5">
+    <div className="w-100 flex flex-col p-7 pb-12 pt-5">
       <div className="flex items-center justify-between">
         <Link to={import.meta.env.PUBLIC_WEB_URL} target="_blank">
           <Logo className="w-24" />
@@ -61,6 +66,9 @@ function RouteComponent() {
           <div className="flex flex-col items-center gap-2">
             <h1 className="text-muted-foreground">Found code:</h1>
             <p className="font-mono text-4xl font-bold">{code}</p>
+            <Button onClick={() => copyText(code)} className="mt-2">
+              <CopyIcon /> Copy
+            </Button>
           </div>
         ) : (
           <div className="flex flex-col items-center">
