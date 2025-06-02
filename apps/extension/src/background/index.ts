@@ -34,7 +34,7 @@ browser.runtime.onMessage.addListener(
 
     switch (payload.event) {
       case "auth.custom":
-        return await authenticateCustom(payload.data, sender);
+        return await authenticateCustom(payload.data);
     }
 
     return Promise.resolve({ success: false, error: "Unknown event" });

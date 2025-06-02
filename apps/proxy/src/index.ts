@@ -31,10 +31,11 @@ app.get("/", (c) => {
 
 app.post("/imap/test", async (c) => {
   const data = await c.req.json();
+
   const imap = new CFImap({
     host: data.host,
     port: data.port,
-    tls: data.tls,
+    tls: data.secure,
     auth: {
       username: data.user,
       password: data.password,
