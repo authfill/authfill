@@ -89,8 +89,4 @@ export class ImapProvider extends BaseProvider {
       socket.close();
     }
   }
-
-  async checkAvailable() {
-    return true;
-  }
 }

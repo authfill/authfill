@@ -1,6 +1,11 @@
+import { GoogleProvider } from "@extension/background/listener/providers/google";
 import { ImapProvider } from "@extension/background/listener/providers/imap";
 import { extractSecretCode } from "@extension/utils/otp-parser";
-import { CustomAccount, getStorage } from "@extension/utils/storage";
+import {
+  CustomAccount,
+  getStorage,
+  GoogleAccount,
+} from "@extension/utils/storage";
 import { htmlToText } from "html-to-text";
 import browser from "webextension-polyfill";
 
@@ -17,6 +22,17 @@ export async function startListener(sender: browser.Runtime.MessageSender) {
             email.text ? email.text : htmlToText(email.html),
           );
 
+          console.log("secret code", secretCode);
+        }
+      })();
+    } else if (account.type === "google") {
+      (async () => {
+        const googleProvider = new GoogleProvider(account as GoogleAccount);
+        const last3Messages = await googleProvider.getLatestEmails(3);
+
+        for (const message of last3Messages) {
+          console.log("new email", message);
+          const secretCode = extractSecretCode(message.text);
           console.log("secret code", secretCode);
         }
       })();

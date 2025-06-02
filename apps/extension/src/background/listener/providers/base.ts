@@ -13,7 +13,7 @@ export class BaseProvider {
     throw new Error("Not implemented");
   }
 
-  async checkAvailable(): Promise<boolean> {
+  async getLatestEmails(count: number): Promise<GeneratorEmail[]> {
     throw new Error("Not implemented");
   }
 }
