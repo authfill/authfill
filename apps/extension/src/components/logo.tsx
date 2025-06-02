@@ -12,7 +12,7 @@ export function Logo({ className }: LogoProps) {
       height="450"
       viewBox="0 0 3114 450"
       fill="none"
-      className={cn("text-foreground", className)}
+      className={cn("text-foreground h-auto", className)}
     >
       <path
         d="M3005.04 442C2975.84 442 2953.12 434.7 2936.9 420.099C2920.68 405.498 2912.57 381.772 2912.57 348.92V10.0596H3017.21V337.361C3017.21 347.906 3019.64 355.409 3024.51 359.87C3029.37 364.332 3036.27 366.562 3045.19 366.562H3065.27V442H3005.04Z"

@@ -1,9 +1,9 @@
+import { useBackground } from "@extension/hooks/use-background";
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import browser from "webextension-polyfill";
 import { z } from "zod";
 
 export const Route = createFileRoute("/setup/custom")({
@@ -23,6 +23,8 @@ export const Route = createFileRoute("/setup/custom")({
 function RouteComponent() {
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
+
+  const { sendToBackground } = useBackground();
 
   const form = useAppForm({
     defaultValues: {
@@ -49,13 +51,7 @@ function RouteComponent() {
         setAdvanced(true);
     },
     onSubmit: async ({ value }) => {
-      // TODO: Make this compatbile with Firefox
-      // Doesnt work with browser.runtime.sendMessage,
-      // but works with chrome.runtime.sendMessage
-      const promise = browser.runtime.sendMessage({
-        event: "auth.custom",
-        data: value,
-      }) as Promise<{ success: boolean }>;
+      const promise = sendToBackground("auth.custom", value);
 
       toast.promise(promise, {
         loading: "Testing email connection...",

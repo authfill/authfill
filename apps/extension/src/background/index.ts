@@ -28,7 +28,7 @@ browser.runtime.onMessageExternal.addListener(
 browser.runtime.onMessage.addListener(async (payload: any) => {
   switch (payload.event) {
     case "listener.start":
-      return await startListener(payload.data);
+      return await startListener(payload.popupId);
     case "auth.custom":
       return await authenticateCustom(payload.data);
   }
