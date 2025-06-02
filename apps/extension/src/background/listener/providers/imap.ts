@@ -26,7 +26,6 @@ export class ImapProvider extends BaseProvider {
     // 3) Wrap the WebSocket's onmessage so that every email is pushed into `pending`
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(data);
       if (data.type === "log" && data.status === "ok") {
         socket.send(JSON.stringify({ event: "listen" }));
       }

@@ -43,6 +43,12 @@ export async function startListener(data: { popupId: string }) {
             data: { code: secretCode },
           });
         }
+
+        for await (const email of googleProvider.listenForNewEmails()) {
+          console.log("new email", email);
+          const secretCode = extractSecretCode(email.text);
+          console.log("secret code", secretCode);
+        }
       })();
     }
   }
