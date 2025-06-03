@@ -1,3 +1,4 @@
+import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@ui/button";
@@ -11,6 +12,8 @@ export const Route = createFileRoute("/setup/")({
 });
 
 function RouteComponent() {
+  useDocumentTitle("Connect your email account");
+
   const navigate = Route.useNavigate();
 
   const form = useAppForm({

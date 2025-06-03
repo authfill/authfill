@@ -1,4 +1,5 @@
 import { useBackground } from "@extension/hooks/use-background";
+import { AccountConfig } from "@extension/utils/storage";
 import { useQuery } from "@tanstack/react-query";
 
 export function useAccounts() {
@@ -8,7 +9,7 @@ export function useAccounts() {
     queryKey: ["accounts"],
     queryFn: async () => {
       const res = await sendToBackground("accounts.list");
-      return res.accounts;
+      return res.accounts as AccountConfig[];
     },
   });
 

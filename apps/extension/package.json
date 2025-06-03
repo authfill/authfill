@@ -25,6 +25,7 @@
     "nanoid": "^5.1.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-letter": "^0.4.0",
     "sonner": "^2.0.4",
     "tailwindcss": "^4.1.3",
     "vite-tsconfig-paths": "^5.1.4",

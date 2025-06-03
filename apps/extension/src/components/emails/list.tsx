@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { CopyIcon, ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import browser from "webextension-polyfill";
 
 interface EmailListProps {
   setOtp: (otp: string | null) => void;
@@ -63,14 +64,14 @@ export function EmailList({ setOtp }: EmailListProps) {
   return (
     <motion.div
       initial={{ marginTop: 0 }}
-      animate={{ marginTop: "1rem" }}
+      animate={{ marginTop: "0.5rem" }}
       className="flex w-full flex-col"
     >
       {emails.map((email, index) => (
         <motion.div
           animate={{
             opacity: [0, 0, 1],
-            marginTop: ["0rem", "0.5rem", "0.5rem"],
+            marginTop: ["0rem", "1rem", "1rem"],
             height: ["0rem", "2.25rem", "2.25rem"],
             x: ["30%", "30%", "0%"],
           }}
@@ -87,7 +88,14 @@ export function EmailList({ setOtp }: EmailListProps) {
           key={email.id}
           className="flex justify-between gap-4 overflow-hidden"
         >
-          <button className="flex min-w-0 max-w-full grow flex-col items-start text-left hover:cursor-pointer">
+          <button
+            onClick={() =>
+              window.open(
+                `${browser.runtime.getURL(`index.html#/emails/${email.id}`)}`,
+              )
+            }
+            className="flex min-w-0 max-w-full grow flex-col items-start text-left hover:cursor-pointer"
+          >
             <p className="max-w-full truncate whitespace-nowrap text-sm">
               {email.subject}
             </p>
