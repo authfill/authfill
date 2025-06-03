@@ -1,4 +1,4 @@
-import { checkEmails } from "@extension/background/utils/email";
+import { addEmails } from "@extension/background/utils/email";
 import { Email } from "@extension/types/email";
 import { CustomAccountConfig } from "@extension/utils/storage";
 
@@ -167,12 +167,13 @@ export class CustomAccount {
     if (this.ws)
       return console.warn(`[${this.config.id}] Account already connected`);
 
-    const previousEmails = await this.getLatestEmails(5);
-    checkEmails(previousEmails);
+    const previousEmails = await this.getLatestEmails(10);
+    addEmails(previousEmails, this.config.id);
 
-    this.listenForEmails({ event: "listen" }, undefined, (email) =>
-      checkEmails([email]),
-    );
+    this.listenForEmails({ event: "listen" }, undefined, (email) => {
+      addEmails([email], this.config.id);
+    });
+
     console.info(`[${this.config.id}] Account connected`);
   }
 

@@ -1,8 +1,7 @@
-import { atom, useAtom } from "jotai";
+import { portAtom } from "@extension/hooks/use-port";
+import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef } from "react";
 import browser from "webextension-polyfill";
-
-const portAtom = atom<browser.Runtime.Port>(browser.runtime.connect());
 
 export function usePortListener(
   event: string,

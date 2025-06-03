@@ -15,6 +15,7 @@ export interface EmailResponse {
   from: string;
   text: string | null;
   html: string | null;
+  date: string | null;
 }
 
 export interface ImapConfig {
@@ -32,4 +33,4 @@ export interface WebSocketMessage {
   realtimeSupport?: boolean;
   email?: EmailResponse;
   revd?: string;
-} 
+}

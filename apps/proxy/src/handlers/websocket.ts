@@ -1,9 +1,13 @@
 import { CFImap } from "cf-imap";
-import { WebSocketMessage } from "../types";
-import { processEmail } from "../services/imap";
 import { WSContext } from "hono/ws";
+import { processEmail } from "../services/imap";
+import { WebSocketMessage } from "../types";
 
-export const handleEmailFetch = async (ws: WSContext<WebSocket>, imap: CFImap, count: number) => {
+export const handleEmailFetch = async (
+  ws: WSContext<WebSocket>,
+  imap: CFImap,
+  count: number,
+) => {
   const folder = await imap.selectFolder("INBOX");
   const totalEmailCount = folder["emails"];
 
@@ -21,11 +25,13 @@ export const handleEmailFetch = async (ws: WSContext<WebSocket>, imap: CFImap, c
   });
 
   for (const email of emails) {
+    if (!email.from) continue;
+
     try {
       const message: WebSocketMessage = {
         type: "email",
         status: "success",
-        email: processEmail(email)
+        email: processEmail(email),
       };
       ws.send(JSON.stringify(message));
     } catch (e) {
@@ -37,27 +43,32 @@ export const handleEmailFetch = async (ws: WSContext<WebSocket>, imap: CFImap, c
   return emails.length;
 };
 
-export const handleIdleListen = async (ws: WSContext<WebSocket>, imap: CFImap) => {
+export const handleIdleListen = async (
+  ws: WSContext<WebSocket>,
+  imap: CFImap,
+) => {
   while (true) {
     await imap.selectFolder("INBOX");
     const encoder = new TextEncoder();
     const decoder = new TextDecoder();
-    
+
     await imap.writer?.write(encoder.encode("AUTHFILLIDLE IDLE\r\n"));
     const data = await imap.reader?.read();
     const decoded = data?.value ? decoder.decode(data.value) : "";
-    
+
     if (!decoded.includes("idling")) {
       throw new Error("Idling failed");
     }
 
     ws.send(JSON.stringify({ status: "ok", revd: decoded }));
     const newEmailData = await imap.reader?.read();
-    const newEmail = newEmailData?.value ? decoder.decode(newEmailData.value) : "";
-    
+    const newEmail = newEmailData?.value
+      ? decoder.decode(newEmailData.value)
+      : "";
+
     const regex = /.*\* ([0-9]+) EXISTS.*/g;
     const match = regex.exec(newEmail);
-    
+
     if (match) {
       await imap.writer?.write(encoder.encode("DONE\r\n"));
       await imap.selectFolder("INBOX");
@@ -67,13 +78,13 @@ export const handleIdleListen = async (ws: WSContext<WebSocket>, imap: CFImap) =
           folder: "INBOX",
           fetchBody: true,
         });
-        
+
         const mail = mails[mails.length - 1];
         if (mail) {
           const message: WebSocketMessage = {
             type: "email",
             status: "success",
-            email: processEmail(mail)
+            email: processEmail(mail),
           };
           ws.send(JSON.stringify(message));
         }
@@ -82,4 +93,4 @@ export const handleIdleListen = async (ws: WSContext<WebSocket>, imap: CFImap) =
       }
     }
   }
-}; 
+};

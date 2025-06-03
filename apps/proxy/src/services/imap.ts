@@ -1,5 +1,5 @@
 import { CFImap } from "cf-imap";
-import { ImapConfig, EmailResponse } from "../types";
+import { EmailResponse, ImapConfig } from "../types";
 import { decodeQuotedPrintable } from "../utils/decode-quoted-printable";
 import { stripEmail } from "../utils/email-formatter";
 
@@ -32,5 +32,6 @@ export const processEmail = (mail: any): EmailResponse => {
     from: mail.from,
     text: stripped.plain ? decodeQuotedPrintable(stripped.plain) : null,
     html: stripped.html ? decodeQuotedPrintable(stripped.html) : null,
+    date: mail.date.toISOString(),
   };
-}; 
+};

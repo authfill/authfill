@@ -96,7 +96,7 @@ export function stripEmail(raw: string): StrippedContent {
       !/^<html/i.test(htmlPortion)
     ) {
       throw new Error(
-        `No boundary found and no standalone HTML payload detected. Raw: ${raw}`,
+        `No boundary found and no standalone HTML payload detected.`,
       );
     }
 

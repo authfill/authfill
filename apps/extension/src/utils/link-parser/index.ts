@@ -101,7 +101,5 @@ export function extractLink(text: string): string | null {
     return best.url;
   }
 
-  console.log("Scored candidates:", scoredCandidates);
-
   return null;
 }

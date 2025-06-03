@@ -125,7 +125,6 @@ export function extractOTPCode(emailBody: string): string | null {
     return { code: candidate, score };
   });
 
-  console.log("Scored canidates:", scoredCandidates);
   // Sort in descending order by score
   scoredCandidates.sort((a, b) => b.score - a.score);
 

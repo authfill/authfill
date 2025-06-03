@@ -14,7 +14,7 @@ export async function getActiveTab() {
   return tabs[0];
 }
 
-export async function hasValidUrl(tab: browser.Tabs.Tab) {
+export function hasValidUrl(tab: browser.Tabs.Tab) {
   if (!tab.url) return false;
   const url = new URL(tab?.url || "");
   return ["http:", "https:"].includes(url.protocol);

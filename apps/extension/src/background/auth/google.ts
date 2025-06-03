@@ -32,7 +32,7 @@ export async function authenticateGoogle(
   if (sender.tab?.id) browser.tabs.remove(sender.tab.id);
 
   browser.tabs.create({
-    url: chrome.runtime.getURL("index.html#/setup/complete"),
+    url: browser.runtime.getURL("index.html#/setup/complete"),
   });
 
   return { success: true };

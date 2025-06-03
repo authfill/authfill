@@ -2,7 +2,7 @@ import { CustomAccount } from "@extension/background/accounts/providers/custom";
 import { GoogleAccount } from "@extension/background/accounts/providers/google";
 import { getStorage, setStorage } from "@extension/utils/storage";
 
-let accounts: (GoogleAccount | CustomAccount)[] = [];
+const accounts: (GoogleAccount | CustomAccount)[] = [];
 
 export async function addAccount(account: GoogleAccount | CustomAccount) {
   accounts.push(account);
@@ -15,15 +15,6 @@ export async function addAccount(account: GoogleAccount | CustomAccount) {
 
 export async function readAccounts() {
   const configs = (await getStorage("accounts")) ?? [];
-
-  if (!accounts.length) {
-    accounts = configs.map((config) => {
-      if (config.type === "google") return new GoogleAccount(config);
-      return new CustomAccount(config);
-    });
-
-    return accounts;
-  }
 
   for (const config of configs) {
     const index = accounts.findIndex((a) => a.config.id === config.id);

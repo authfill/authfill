@@ -1,6 +1,6 @@
 import { customAlphabet } from "nanoid";
 
-type Prefix = "acc" | "port";
+type Prefix = "acc" | "port" | "mail";
 
 const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 export const nanoid = customAlphabet(pool, 21);

@@ -1,4 +1,4 @@
-import { checkEmails } from "@extension/background/utils/email";
+import { addEmails } from "@extension/background/utils/email";
 import { GoogleAccountConfig } from "@extension/utils/storage";
 import axios from "axios";
 
@@ -86,6 +86,7 @@ export class GoogleAccount {
       to: string;
       html: string;
       text: string;
+      date: string;
     }> = [];
 
     // 2. For each message ID, fetch full details and extract fields
@@ -106,8 +107,11 @@ export class GoogleAccount {
       let subject = "";
       let from = "";
       let to = "";
+      let date = "";
+
       const headersArray: Array<{ name: string; value: string }> =
         msgJson.payload.headers || [];
+
       for (const header of headersArray) {
         const nameLower = header.name.toLowerCase();
         if (nameLower === "subject") {
@@ -116,6 +120,8 @@ export class GoogleAccount {
           from = header.value;
         } else if (nameLower === "to") {
           to = header.value;
+        } else if (nameLower === "date") {
+          date = new Date(header.value).toISOString();
         }
       }
 
@@ -131,6 +137,7 @@ export class GoogleAccount {
         to,
         html: bodyHtml,
         text: bodyText,
+        date,
       });
     }
 
@@ -141,8 +148,8 @@ export class GoogleAccount {
     if (this.interval)
       return console.warn(`[${this.config.id}] Account already connected`);
 
-    const previousEmails = await this.getLatestEmails(5);
-    checkEmails(previousEmails);
+    const previousEmails = await this.getLatestEmails(10);
+    addEmails(previousEmails, this.config.id);
 
     const blacklist: string[] = previousEmails.map((email) => email.id);
 
@@ -154,7 +161,8 @@ export class GoogleAccount {
         blacklist.push(email.id);
       }
 
-      if (emails.length > 0) checkEmails(emails);
+      if (emails.length <= 0) return;
+      addEmails(emails, this.config.id);
     }, 1000);
 
     console.info(`[${this.config.id}] Account connected`);

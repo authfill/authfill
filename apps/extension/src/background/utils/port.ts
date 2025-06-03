@@ -1,28 +1,35 @@
 import { readAccounts } from "@extension/background/accounts";
+import { clearEmailCache } from "@extension/background/utils/email";
 import { getActiveTab } from "@extension/background/utils/tab";
 import browser from "webextension-polyfill";
 
-export let ports: {
+export type Port = {
   id: string;
-  port: browser.Runtime.Port;
+  runtime: browser.Runtime.Port;
   tab?: browser.Tabs.Tab;
-}[] = [];
+};
 
-export async function connectPort(id: string, port: browser.Runtime.Port) {
+export let ports: Port[] = [];
+
+export async function connectPort(id: string, runtime: browser.Runtime.Port) {
   const tab = await getActiveTab();
   console.info(`[${id}] Port connected`);
 
-  ports.push({
+  const port = {
     id,
-    port,
     tab,
+    runtime,
     ...(tab && { tab }),
-  });
+  };
+
+  ports.push(port);
 
   const accounts = await readAccounts();
   for (const account of accounts) {
     account.connect();
   }
+
+  return port;
 }
 
 export async function disconnectPort(id: string) {
@@ -30,6 +37,8 @@ export async function disconnectPort(id: string) {
   console.info(`[${id}] Port disconnected`);
 
   if (ports.length !== 0) return;
+
+  clearEmailCache();
 
   const accounts = await readAccounts();
   for (const account of accounts) {
