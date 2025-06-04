@@ -1,9 +1,8 @@
 import { Port, ports } from "@extension/background/utils/port";
 import { hasValidUrl } from "@extension/background/utils/tab";
 import { Email, EmailBase } from "@extension/types/email";
+import { extractAuthCandidates } from "@extension/utils/detection";
 import { id } from "@extension/utils/id";
-import { extractLink } from "@extension/utils/link-parser";
-import { extractOTPCode } from "@extension/utils/otp-parser";
 import { htmlToText } from "html-to-text";
 
 export let emailCache: Email[] = [];
@@ -12,15 +11,18 @@ export function addEmails(emails: EmailBase[], accountId: string) {
   for (const emailBase of emails) {
     const email: Email = { ...emailBase, id: id("mail"), accountId };
 
-    const link = extractLink(
-      email.text ? email.text : email.html ? htmlToText(email.html) : "",
+    const candidates = extractAuthCandidates(
+      email.text ? email.text : htmlToText(email.html),
     );
-    if (link) email.link = link;
+    console.log(email.subject, candidates);
+    if (!candidates.length) continue;
 
-    const otp = extractOTPCode(
-      email.text ? email.text : email.html ? htmlToText(email.html) : "",
-    );
-    if (otp) email.otp = otp;
+    const topScorer = candidates[0];
+    if (topScorer.type === "link") {
+      email.link = topScorer.value;
+    } else if (topScorer.type === "code") {
+      email.otp = topScorer.value;
+    }
 
     emailCache.push(email);
   }
