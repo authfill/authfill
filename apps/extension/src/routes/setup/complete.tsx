@@ -1,3 +1,4 @@
+import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
@@ -7,6 +8,8 @@ export const Route = createFileRoute("/setup/complete")({
 });
 
 function RouteComponent() {
+  useDocumentTitle("Setup complete");
+
   const queryClient = useQueryClient();
 
   useEffect(() => {

@@ -34,7 +34,7 @@ export default defineManifest(async (env) => ({
     matches: ["https://*.authfill.com/*", "http://localhost:3000/*"],
   },
   content_security_policy: {
-    extension_pages: `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' ws://localhost:3001 https://autoconfig.thunderbird.net https://gmail.googleapis.com/ ${process.env.PUBLIC_WSS_URL} ${process.env.PUBLIC_EXTENSION_URL} ${process.env.PUBLIC_PROXY_URL}`,
+    extension_pages: `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' ws://localhost:3001 https://autoconfig.thunderbird.net https://gmail.googleapis.com ${process.env.PUBLIC_WSS_URL} ${process.env.PUBLIC_EXTENSION_URL} ${process.env.PUBLIC_PROXY_URL}`,
   },
   host_permissions:
     env.mode == "development" ? [`${process.env.PUBLIC_EXTENSION_URL}/*`] : [],

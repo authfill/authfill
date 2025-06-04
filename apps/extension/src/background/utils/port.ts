@@ -22,6 +22,7 @@ export async function connectPort(id: string, runtime: browser.Runtime.Port) {
     ...(tab && { tab }),
   };
 
+  if (ports.length === 0) clearEmailCache();
   ports.push(port);
 
   const accounts = await readAccounts();
@@ -37,8 +38,6 @@ export async function disconnectPort(id: string) {
   console.info(`[${id}] Port disconnected`);
 
   if (ports.length !== 0) return;
-
-  clearEmailCache();
 
   const accounts = await readAccounts();
   for (const account of accounts) {

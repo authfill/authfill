@@ -1,4 +1,5 @@
 import { useBackground } from "@extension/hooks/use-background";
+import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { MinusIcon, PlusIcon } from "lucide-react";
@@ -21,6 +22,8 @@ export const Route = createFileRoute("/setup/custom")({
 });
 
 function RouteComponent() {
+  useDocumentTitle("Setup your email account");
+
   const navigate = Route.useNavigate();
   const search = Route.useSearch();
 

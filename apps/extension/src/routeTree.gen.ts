@@ -12,16 +12,32 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as SetupRouteImport } from './routes/setup/route'
+import { Route as EmailsRouteImport } from './routes/emails/route'
+import { Route as AccountsRouteImport } from './routes/accounts/route'
 import { Route as IndexImport } from './routes/index'
 import { Route as SetupIndexImport } from './routes/setup/index'
+import { Route as AccountsIndexImport } from './routes/accounts/index'
 import { Route as SetupCustomImport } from './routes/setup/custom'
 import { Route as SetupCompleteImport } from './routes/setup/complete'
+import { Route as EmailsIdImport } from './routes/emails/$id'
 
 // Create/Update Routes
 
 const SetupRouteRoute = SetupRouteImport.update({
   id: '/setup',
   path: '/setup',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const EmailsRouteRoute = EmailsRouteImport.update({
+  id: '/emails',
+  path: '/emails',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AccountsRouteRoute = AccountsRouteImport.update({
+  id: '/accounts',
+  path: '/accounts',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -37,6 +53,12 @@ const SetupIndexRoute = SetupIndexImport.update({
   getParentRoute: () => SetupRouteRoute,
 } as any)
 
+const AccountsIndexRoute = AccountsIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AccountsRouteRoute,
+} as any)
+
 const SetupCustomRoute = SetupCustomImport.update({
   id: '/custom',
   path: '/custom',
@@ -47,6 +69,12 @@ const SetupCompleteRoute = SetupCompleteImport.update({
   id: '/complete',
   path: '/complete',
   getParentRoute: () => SetupRouteRoute,
+} as any)
+
+const EmailsIdRoute = EmailsIdImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => EmailsRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -60,12 +88,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/accounts': {
+      id: '/accounts'
+      path: '/accounts'
+      fullPath: '/accounts'
+      preLoaderRoute: typeof AccountsRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/emails': {
+      id: '/emails'
+      path: '/emails'
+      fullPath: '/emails'
+      preLoaderRoute: typeof EmailsRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/setup': {
       id: '/setup'
       path: '/setup'
       fullPath: '/setup'
       preLoaderRoute: typeof SetupRouteImport
       parentRoute: typeof rootRoute
+    }
+    '/emails/$id': {
+      id: '/emails/$id'
+      path: '/$id'
+      fullPath: '/emails/$id'
+      preLoaderRoute: typeof EmailsIdImport
+      parentRoute: typeof EmailsRouteImport
     }
     '/setup/complete': {
       id: '/setup/complete'
@@ -81,6 +130,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SetupCustomImport
       parentRoute: typeof SetupRouteImport
     }
+    '/accounts/': {
+      id: '/accounts/'
+      path: '/'
+      fullPath: '/accounts/'
+      preLoaderRoute: typeof AccountsIndexImport
+      parentRoute: typeof AccountsRouteImport
+    }
     '/setup/': {
       id: '/setup/'
       path: '/'
@@ -92,6 +148,30 @@ declare module '@tanstack/react-router' {
 }
 
 // Create and export the route tree
+
+interface AccountsRouteRouteChildren {
+  AccountsIndexRoute: typeof AccountsIndexRoute
+}
+
+const AccountsRouteRouteChildren: AccountsRouteRouteChildren = {
+  AccountsIndexRoute: AccountsIndexRoute,
+}
+
+const AccountsRouteRouteWithChildren = AccountsRouteRoute._addFileChildren(
+  AccountsRouteRouteChildren,
+)
+
+interface EmailsRouteRouteChildren {
+  EmailsIdRoute: typeof EmailsIdRoute
+}
+
+const EmailsRouteRouteChildren: EmailsRouteRouteChildren = {
+  EmailsIdRoute: EmailsIdRoute,
+}
+
+const EmailsRouteRouteWithChildren = EmailsRouteRoute._addFileChildren(
+  EmailsRouteRouteChildren,
+)
 
 interface SetupRouteRouteChildren {
   SetupCompleteRoute: typeof SetupCompleteRoute
@@ -111,50 +191,85 @@ const SetupRouteRouteWithChildren = SetupRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/accounts': typeof AccountsRouteRouteWithChildren
+  '/emails': typeof EmailsRouteRouteWithChildren
   '/setup': typeof SetupRouteRouteWithChildren
+  '/emails/$id': typeof EmailsIdRoute
   '/setup/complete': typeof SetupCompleteRoute
   '/setup/custom': typeof SetupCustomRoute
+  '/accounts/': typeof AccountsIndexRoute
   '/setup/': typeof SetupIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/emails': typeof EmailsRouteRouteWithChildren
+  '/emails/$id': typeof EmailsIdRoute
   '/setup/complete': typeof SetupCompleteRoute
   '/setup/custom': typeof SetupCustomRoute
+  '/accounts': typeof AccountsIndexRoute
   '/setup': typeof SetupIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/accounts': typeof AccountsRouteRouteWithChildren
+  '/emails': typeof EmailsRouteRouteWithChildren
   '/setup': typeof SetupRouteRouteWithChildren
+  '/emails/$id': typeof EmailsIdRoute
   '/setup/complete': typeof SetupCompleteRoute
   '/setup/custom': typeof SetupCustomRoute
+  '/accounts/': typeof AccountsIndexRoute
   '/setup/': typeof SetupIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/setup' | '/setup/complete' | '/setup/custom' | '/setup/'
+  fullPaths:
+    | '/'
+    | '/accounts'
+    | '/emails'
+    | '/setup'
+    | '/emails/$id'
+    | '/setup/complete'
+    | '/setup/custom'
+    | '/accounts/'
+    | '/setup/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/setup/complete' | '/setup/custom' | '/setup'
+  to:
+    | '/'
+    | '/emails'
+    | '/emails/$id'
+    | '/setup/complete'
+    | '/setup/custom'
+    | '/accounts'
+    | '/setup'
   id:
     | '__root__'
     | '/'
+    | '/accounts'
+    | '/emails'
     | '/setup'
+    | '/emails/$id'
     | '/setup/complete'
     | '/setup/custom'
+    | '/accounts/'
     | '/setup/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountsRouteRoute: typeof AccountsRouteRouteWithChildren
+  EmailsRouteRoute: typeof EmailsRouteRouteWithChildren
   SetupRouteRoute: typeof SetupRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountsRouteRoute: AccountsRouteRouteWithChildren,
+  EmailsRouteRoute: EmailsRouteRouteWithChildren,
   SetupRouteRoute: SetupRouteRouteWithChildren,
 }
 
@@ -169,11 +284,25 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/accounts",
+        "/emails",
         "/setup"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/accounts": {
+      "filePath": "accounts/route.tsx",
+      "children": [
+        "/accounts/"
+      ]
+    },
+    "/emails": {
+      "filePath": "emails/route.tsx",
+      "children": [
+        "/emails/$id"
+      ]
     },
     "/setup": {
       "filePath": "setup/route.tsx",
@@ -183,6 +312,10 @@ export const routeTree = rootRoute
         "/setup/"
       ]
     },
+    "/emails/$id": {
+      "filePath": "emails/$id.tsx",
+      "parent": "/emails"
+    },
     "/setup/complete": {
       "filePath": "setup/complete.tsx",
       "parent": "/setup"
@@ -190,6 +323,10 @@ export const routeTree = rootRoute
     "/setup/custom": {
       "filePath": "setup/custom.tsx",
       "parent": "/setup"
+    },
+    "/accounts/": {
+      "filePath": "accounts/index.tsx",
+      "parent": "/accounts"
     },
     "/setup/": {
       "filePath": "setup/index.tsx",

@@ -58,3 +58,10 @@ export function getEmailsForPort(port: Port) {
 export function clearEmailCache() {
   emailCache = [];
 }
+
+export function getEmail({ emailId }: { emailId: string }) {
+  console.log("getEmail", emailId);
+  return {
+    email: emailCache.find((email) => email.id === emailId),
+  };
+}

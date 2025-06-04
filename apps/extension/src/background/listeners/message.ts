@@ -1,5 +1,6 @@
-import { listAccounts } from "@extension/background/accounts";
+import { deleteAccount, listAccounts } from "@extension/background/accounts";
 import { authenticateCustom } from "@extension/background/auth/custom";
+import { getEmail } from "@extension/background/utils/email";
 import { showNotification } from "@extension/background/utils/notification";
 import browser from "webextension-polyfill";
 
@@ -11,6 +12,10 @@ browser.runtime.onMessage.addListener(async (payload: any) => {
       return await showNotification(payload.data);
     case "accounts.list":
       return await listAccounts();
+    case "accounts.delete":
+      return await deleteAccount(payload.data);
+    case "emails.get":
+      return getEmail(payload.data);
   }
 
   return Promise.resolve({ success: false, error: "Unknown event" });
