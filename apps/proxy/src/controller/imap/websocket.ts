@@ -35,12 +35,10 @@ export const handleImapWebSocket: Handler<{ Bindings: Env }, "/imap"> =
               break;
 
             case "listen":
-              if (!isConnected || !imap) {
+              if (!isConnected || !imap || !isRealtime) {
                 throw new Error("Not connected or realtime not supported");
               }
-              if (isRealtime) {
-                await handleIdleListen(ws, imap);
-              }
+              await handleIdleListen(ws, imap);
               break;
 
             case "fetch-emails":
@@ -77,4 +75,3 @@ export const handleImapWebSocket: Handler<{ Bindings: Env }, "/imap"> =
       },
     };
   });
-
