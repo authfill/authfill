@@ -40,7 +40,7 @@ export const handleEmailFetch = async (
 
   // 3) Send each over WebSocket
   for (const email of emails) {
-    if (!email.from) continue;
+    if (!email.from || !email.date) continue;
     try {
       const message: WebSocketMessage = {
         type: "email",
@@ -245,16 +245,14 @@ export const handleIdleListen = async (
           fetchBody: true,
         });
 
-        if (mails.length > 0) {
-          const mail = mails[0];
-          if (mail.from) {
-            const message: WebSocketMessage = {
-              type: "email",
-              status: "success",
-              email: processEmail(mail),
-            };
-            ws.send(JSON.stringify(message));
-          }
+        for (const mail of mails) {
+          if (!mail.from || !mail.date) continue;
+          const message: WebSocketMessage = {
+            type: "email",
+            status: "success",
+            email: processEmail(mail),
+          };
+          ws.send(JSON.stringify(message));
         }
       } catch (err) {
         console.error("Error fetching new email:", err);
