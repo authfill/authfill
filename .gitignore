@@ -11,3 +11,4 @@ server/dist
 public/dist
 build/
 .dev.vars
+.vinxi/
