@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as ImprintImport } from './routes/imprint'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthGoogleRouteImport } from './routes/auth/google/route'
 import { Route as AuthGoogleIndexImport } from './routes/auth/google/index'
@@ -18,6 +19,12 @@ import { Route as AuthGoogleMissingScopeImport } from './routes/auth/google/miss
 import { Route as AuthGoogleCallbackImport } from './routes/auth/google/callback'
 
 // Create/Update Routes
+
+const ImprintRoute = ImprintImport.update({
+  id: '/imprint',
+  path: '/imprint',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
@@ -58,6 +65,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/imprint': {
+      id: '/imprint'
+      path: '/imprint'
+      fullPath: '/imprint'
+      preLoaderRoute: typeof ImprintImport
       parentRoute: typeof rootRoute
     }
     '/auth/google': {
@@ -111,6 +125,7 @@ const AuthGoogleRouteRouteWithChildren = AuthGoogleRouteRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/imprint': typeof ImprintRoute
   '/auth/google': typeof AuthGoogleRouteRouteWithChildren
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
@@ -119,6 +134,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/imprint': typeof ImprintRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
   '/auth/google': typeof AuthGoogleIndexRoute
@@ -127,6 +143,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/imprint': typeof ImprintRoute
   '/auth/google': typeof AuthGoogleRouteRouteWithChildren
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
@@ -137,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/imprint'
     | '/auth/google'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
@@ -144,12 +162,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/imprint'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
     | '/auth/google'
   id:
     | '__root__'
     | '/'
+    | '/imprint'
     | '/auth/google'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
@@ -159,11 +179,13 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ImprintRoute: typeof ImprintRoute
   AuthGoogleRouteRoute: typeof AuthGoogleRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ImprintRoute: ImprintRoute,
   AuthGoogleRouteRoute: AuthGoogleRouteRouteWithChildren,
 }
 
@@ -178,11 +200,15 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/imprint",
         "/auth/google"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/imprint": {
+      "filePath": "imprint.tsx"
     },
     "/auth/google": {
       "filePath": "auth/google/route.tsx",
