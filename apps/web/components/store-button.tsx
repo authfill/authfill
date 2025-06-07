@@ -1,6 +1,7 @@
 import { LinkProps } from "@tanstack/react-router";
 import { Button, ButtonProps } from "@ui/button";
 import ChromeIcon from "@web/components/icons/chrome";
+import FirefoxIcon from "@web/components/icons/firefox";
 import { links } from "@web/conf/links";
 import { useMemo } from "react";
 
@@ -33,7 +34,7 @@ export default function StoreButton(
     if (store === "CHROME_STORE") {
       return <ChromeIcon />;
     } else if (store === "FIREFOX_STORE") {
-      return null;
+      return <FirefoxIcon />;
     }
     return <ChromeIcon />;
   }, [store]);
