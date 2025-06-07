@@ -30,7 +30,6 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: web
           directory: apps/web/dist
-          buildOutputDirectory: apps/web/dist
 
   deploy-proxy:
     runs-on: ubuntu-latest
@@ -45,6 +44,9 @@ jobs:
 
       - name: Install Wrangler
         run: npm install -g wrangler # Or use a specific version like npm install -g wrangler@3
+
+      - name: Install Dependencies
+        run: pnpm install
 
       - name: Build and Deploy proxy worker
         run: |
