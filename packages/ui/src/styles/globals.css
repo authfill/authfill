@@ -1,9 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 @source "../";
 
 @custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Geist", sans-serif;
+}
 
 body {
   font-family: "Geist", sans-serif;

@@ -38,9 +38,6 @@ importers:
       '@authfill/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@fontsource/geist':
-        specifier: ^5.2.6
-        version: 5.2.6
       '@lottiefiles/dotlottie-react':
         specifier: ^0.14.0
         version: 0.14.0(react@19.1.0)
@@ -199,9 +196,6 @@ importers:
       '@authfill/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@fontsource/geist':
-        specifier: ^5.2.6
-        version: 5.2.6
       '@mdx-js/rollup':
         specifier: ^3.1.0
         version: 3.1.0(acorn@8.14.1)(rollup@4.41.1)
@@ -1703,10 +1697,6 @@ packages:
 
   /@fastify/busboy@3.1.1:
     resolution: {integrity: sha512-5DGmA8FTdB2XbDeEwc/5ZXBl6UbBAyBOOLlPuBnZ/N1SwdH9Ii+cOX3tBROlDgcTXxjOYnLMVoKk9+FXAw0CJw==}
-    dev: false
-
-  /@fontsource/geist@5.2.6:
-    resolution: {integrity: sha512-HKRFUn4fApQr9iGaVLUWG5vs+QYFqhKa5X7AFpT6Gey0Kx0ibvpFceMbMDDdlzzqPiGkvCuvYRUN55rvqXgibg==}
     dev: false
 
   /@humanfs/core@0.19.1:

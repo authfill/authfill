@@ -7,17 +7,8 @@ import {
 } from "@tanstack/react-router";
 import globals from "@ui/styles/globals.css?url";
 import { Toaster } from "@ui/toast";
+import Header from "@web/components/header";
 import type { ReactNode } from "react";
-
-import "@fontsource/geist/100.css";
-import "@fontsource/geist/200.css";
-import "@fontsource/geist/300.css";
-import "@fontsource/geist/400.css";
-import "@fontsource/geist/500.css";
-import "@fontsource/geist/600.css";
-import "@fontsource/geist/700.css";
-import "@fontsource/geist/800.css";
-import "@fontsource/geist/900.css";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -30,7 +21,7 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "AuthFill",
       },
     ],
     links: [{ rel: "stylesheet", href: globals }],
@@ -41,7 +32,12 @@ export const Route = createRootRoute({
 function RootComponent() {
   return (
     <RootDocument>
-      <Outlet />
+      <div className="container mx-auto flex min-h-screen flex-col p-5">
+        <Header />
+        <main className="my-4 flex-1">
+          <Outlet />
+        </main>
+      </div>
     </RootDocument>
   );
 }
