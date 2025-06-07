@@ -1,4 +1,5 @@
 import { Button } from "@ui/button";
+import GithubIcon from "@web/components/icons/github";
 import StoreButton from "@web/components/store-button";
 import { links } from "@web/conf/links";
 
@@ -13,6 +14,7 @@ export default function Header() {
           target="_blank"
           variant="secondary"
         >
+          <GithubIcon />
           GitHub
         </Button>
         <StoreButton target="_blank" />
