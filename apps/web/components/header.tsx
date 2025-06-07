@@ -1,4 +1,5 @@
 import { Button } from "@ui/button";
+import StoreButton from "@web/components/store-button";
 import { links } from "@web/conf/links";
 
 export default function Header() {
@@ -14,9 +15,7 @@ export default function Header() {
         >
           GitHub
         </Button>
-        <Button as="link" to={links.CHROME_STORE as any} target="_blank">
-          Chrome Store
-        </Button>
+        <StoreButton target="_blank" />
       </nav>
     </header>
   );
