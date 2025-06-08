@@ -6,6 +6,9 @@ import { links } from "@web/conf/links";
 export default function Hero() {
   return (
     <div className="flex flex-col items-center">
+      <div className="mb-4 rounded-full border border-amber-500 bg-amber-500/30 px-3 py-1 font-medium">
+        No subscriptions. No paywall. 100% free.
+      </div>
       <h1 className="leading-17 max-w-lg text-center text-6xl font-bold tracking-tight">
         Verify your email, with{" "}
         <span className="relative whitespace-nowrap">
