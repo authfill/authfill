@@ -55,11 +55,11 @@ export default function Features() {
           <div className="bg-foreground/18 shadow-foreground absolute -inset-x-1.5 inset-y-1 rounded-lg"></div>
         </span>
       </h2>
-      <div className="mx-auto mt-12 mt-4 grid w-full max-w-6xl grid-cols-6 gap-12">
+      <div className="mx-auto mt-12 mt-4 grid w-full max-w-6xl grid-cols-1 gap-12 lg:grid-cols-6">
         {FEATURES.map((feature, i) => (
           <div
             key={feature.title}
-            className={i < 2 ? "col-span-3" : "col-span-2"}
+            className={i < 2 ? "lg:col-span-3" : "lg:col-span-2"}
           >
             <Feature {...feature} />
           </div>
@@ -71,7 +71,7 @@ export default function Features() {
 
 export function Feature({ title, description, icon }: (typeof FEATURES)[0]) {
   return (
-    <div className="bg-foreground/10 flex h-full flex-col items-start justify-start gap-5 rounded-lg p-10">
+    <div className="bg-foreground/10 flex h-full w-full flex-col items-start justify-start gap-5 rounded-lg p-10">
       <div className="flex items-center gap-5">
         <div className="bg-foreground/10 rounded-lg p-2">{icon}</div>
         <div className="flex items-center gap-5">

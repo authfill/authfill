@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 
 export default function Footer() {
   return (
-    <footer className="mx-auto flex w-full items-center justify-between py-4 text-sm">
+    <footer className="mx-auto flex w-full flex-col items-center justify-between gap-4 py-4 text-sm lg:flex-row">
       <p className="text-center text-gray-400">
         &copy; {new Date().getFullYear()} AuthFill. All rights reserved.
       </p>
