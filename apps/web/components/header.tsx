@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@ui/button";
+import AuthFillLogo from "@web/components/icons/authfill";
 import GithubIcon from "@web/components/icons/github";
 import StoreButton from "@web/components/store-button";
 import { links } from "@web/conf/links";
@@ -8,7 +9,7 @@ export default function Header() {
   return (
     <header className="mx-auto flex w-full items-center justify-between">
       <Link to="/">
-        <h1 className="text-2xl font-bold">AuthFill</h1>
+        <AuthFillLogo className="h-5 w-auto" />
       </Link>
       <nav className="flex space-x-2">
         <Button
