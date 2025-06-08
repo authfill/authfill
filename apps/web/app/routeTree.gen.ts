@@ -11,6 +11,7 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
 import { Route as ImprintImport } from './routes/imprint'
 import { Route as IndexImport } from './routes/index'
@@ -20,6 +21,12 @@ import { Route as AuthGoogleMissingScopeImport } from './routes/auth/google/miss
 import { Route as AuthGoogleCallbackImport } from './routes/auth/google/callback'
 
 // Create/Update Routes
+
+const TermsRoute = TermsImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const PrivacyRoute = PrivacyImport.update({
   id: '/privacy',
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyImport
       parentRoute: typeof rootRoute
     }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsImport
+      parentRoute: typeof rootRoute
+    }
     '/auth/google': {
       id: '/auth/google'
       path: '/auth/google'
@@ -141,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/auth/google': typeof AuthGoogleRouteRouteWithChildren
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
@@ -151,6 +166,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
   '/auth/google': typeof AuthGoogleIndexRoute
@@ -161,6 +177,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
+  '/terms': typeof TermsRoute
   '/auth/google': typeof AuthGoogleRouteRouteWithChildren
   '/auth/google/callback': typeof AuthGoogleCallbackRoute
   '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
@@ -173,6 +190,7 @@ export interface FileRouteTypes {
     | '/'
     | '/imprint'
     | '/privacy'
+    | '/terms'
     | '/auth/google'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
@@ -182,6 +200,7 @@ export interface FileRouteTypes {
     | '/'
     | '/imprint'
     | '/privacy'
+    | '/terms'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
     | '/auth/google'
@@ -190,6 +209,7 @@ export interface FileRouteTypes {
     | '/'
     | '/imprint'
     | '/privacy'
+    | '/terms'
     | '/auth/google'
     | '/auth/google/callback'
     | '/auth/google/missing-scope'
@@ -201,6 +221,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ImprintRoute: typeof ImprintRoute
   PrivacyRoute: typeof PrivacyRoute
+  TermsRoute: typeof TermsRoute
   AuthGoogleRouteRoute: typeof AuthGoogleRouteRouteWithChildren
 }
 
@@ -208,6 +229,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ImprintRoute: ImprintRoute,
   PrivacyRoute: PrivacyRoute,
+  TermsRoute: TermsRoute,
   AuthGoogleRouteRoute: AuthGoogleRouteRouteWithChildren,
 }
 
@@ -224,6 +246,7 @@ export const routeTree = rootRoute
         "/",
         "/imprint",
         "/privacy",
+        "/terms",
         "/auth/google"
       ]
     },
@@ -235,6 +258,9 @@ export const routeTree = rootRoute
     },
     "/privacy": {
       "filePath": "privacy.tsx"
+    },
+    "/terms": {
+      "filePath": "terms.tsx"
     },
     "/auth/google": {
       "filePath": "auth/google/route.tsx",

@@ -9,6 +9,7 @@ export default function Footer() {
       <nav className="flex gap-x-5 text-gray-400">
         <Link to="/imprint">Imprint</Link>
         <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
       </nav>
       <p className="text-gray-400">
         Made with <span className="text-red-500">❤️</span> by{" "}
