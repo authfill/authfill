@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-router";
 import globals from "@ui/styles/globals.css?url";
 import { Toaster } from "@ui/toast";
+import Footer from "@web/components/footer";
 import Header from "@web/components/header";
 import type { ReactNode } from "react";
 
@@ -37,6 +38,7 @@ function RootComponent() {
         <main className="my-4 flex-1">
           <Outlet />
         </main>
+        <Footer />
       </div>
     </RootDocument>
   );
