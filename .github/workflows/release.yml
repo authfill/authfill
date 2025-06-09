@@ -19,18 +19,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
         with:
-          node-version: "20" # Specify your Node.js version
-          cache: "pnpm" # Cache pnpm dependencies
-
-      - name: Install pnpm
-        run: npm install -g pnpm
-
-      - name: Install monorepo dependencies
-        # This assumes your root pnpm-workspace.yaml covers apps/extension
-        run: pnpm install --frozen-lockfile
+          version: 9
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile]
 
       - name: Build extension for ${{ matrix.platform }}
         run: pnpm --filter extension build --platform=${{ matrix.platform }}
