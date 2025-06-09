@@ -28,7 +28,7 @@ jobs:
               args: [--frozen-lockfile]
 
       - name: Build extension for ${{ matrix.platform }}
-        run: pnpm --filter extension build --platform=${{ matrix.platform }}
+        run: pnpm --filter extension build
 
       - name: Archive extension build for ${{ matrix.platform }}
         # This will create a zip file for each platform
