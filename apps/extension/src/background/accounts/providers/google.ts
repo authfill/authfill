@@ -1,4 +1,4 @@
-import { patchAccount } from "@extension/background/accounts";
+import { syncAccounts } from "@extension/background/accounts";
 import { addEmails } from "@extension/background/utils/email";
 import { GoogleAccountConfig } from "@extension/utils/storage";
 import axios from "axios";
@@ -19,8 +19,6 @@ export class GoogleAccount {
   }
 
   private async refreshToken() {
-    console.log("Refreshing token");
-    console.log(import.meta.env.PUBLIC_PROXY_URL);
     const r = await axios.post(
       `${import.meta.env.PUBLIC_PROXY_URL}/auth/google/refresh`,
       {
@@ -28,12 +26,10 @@ export class GoogleAccount {
       },
     );
 
-    console.log(r.data);
-
     this.config.credentials.accessToken = r.data.accessToken;
     this.config.credentials.expiresAt = r.data.expiresAt;
 
-    await patchAccount(this.config.email, this);
+    await syncAccounts();
   }
 
   /**
@@ -85,13 +81,13 @@ export class GoogleAccount {
    * containing { subject, from, to, bodyHtml, bodyText }.
    */
   async getLatestEmails(count: number) {
+    await this.refreshIfNecessary();
+
     const { accessToken } = this.config.credentials;
     const headers = {
       Authorization: `Bearer ${accessToken}`,
       Accept: "application/json",
     };
-
-    await this.refreshIfNecessary();
 
     // 1. List the latest `count` emails (newest first by default)
     const listUrl = `https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=${count}`;

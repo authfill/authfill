@@ -1,12 +1,77 @@
-interface AuthCandidate {
+import { convert } from "html-to-text";
+
+export interface AuthCandidate {
   type: "link" | "code";
   value: string;
   score: number;
 }
 
-export function extractAuthCandidates(emailBody: string): AuthCandidate[] {
+const codePatterns = [
+  "????",
+  "?????",
+  "??????",
+  "???????",
+  "???-???",
+  "?-?-?-?",
+  "????????",
+  "??-??-??",
+  "?-?-?-?-?",
+  "????-????",
+  "?????????",
+  "??????????",
+  "???-???-???",
+  "?-?-?-?-?-?",
+  "?????-?????",
+  "??????-??????",
+  "?-?-?-?-?-?-?",
+  "????-????-????",
+  "???-???-???-???",
+  "???????-???????",
+  "?????-?????-?????",
+  "????-????-????-????",
+  "?????-?????-?????-?????",
+];
+
+const codePartRegex = "[A-Za-z0-9]";
+const codeSeperatorRegex = "(( - )|( \\* )|( _ )|[ \\-*_\\.])";
+let codeBodyRegex = "(";
+
+for (const pattern of codePatterns) {
+  const parts = pattern.split("-");
+
+  codeBodyRegex += "(?<=\\s|^)";
+  codeBodyRegex += `(${parts.map((part) => `${codePartRegex}{${part.length}}`).join(codeSeperatorRegex)})`;
+  codeBodyRegex += "(?=\\s|$)";
+  codeBodyRegex += "|";
+}
+
+codeBodyRegex = codeBodyRegex.slice(0, -1);
+codeBodyRegex += ")";
+
+export function extractAuthCandidates({
+  html,
+  text,
+}: {
+  html?: string;
+  text?: string;
+}): AuthCandidate[] {
+  let emailBody = text || "";
+  if (html)
+    emailBody = convert(html, {
+      wordwrap: false,
+      selectors: [
+        { selector: "img", format: "skip" },
+        {
+          selector: "a",
+          options: { linkBrackets: false },
+        },
+      ],
+    });
+
+  // Replace non-breaking spaces with regular spaces
+  emailBody = emailBody.replace(/ /g, " ");
+
   const candidates: AuthCandidate[] = [];
-  const lowerEmailBody = emailBody;
 
   const authKeywords = [
     { regex: /verif(?:y|ies|ied|ying|ication)/gi, weight: 12 },
@@ -53,19 +118,36 @@ export function extractAuthCandidates(emailBody: string): AuthCandidate[] {
     /security\s+code/gi,
     /authentication\s+code/gi,
     /login\s+code/gi,
+    /sign(ed)?\s?(in|up)/gi,
   ];
 
   const linkRegex = /(https?:\/\/[^\s]+)/g;
   const linkMatches = emailBody.match(linkRegex) || [];
 
-  // Process links first
   linkMatches.forEach((rawLink) => {
-    const link = sanitizeLink(rawLink);
     let score = 20;
+    const link = sanitizeLink(rawLink);
     const lowerLink = link;
 
+    const url = new URL(link);
+    // Skip links to the index page (e.g. https://example.com/)
+    if (url.pathname === "/") return;
+
+    const lastPath = link.split("/").pop();
+    const lastPathSplit = lastPath?.split(".");
+    const fileExtension =
+      (lastPathSplit?.length || 0) > 1 ? lastPathSplit?.at(-1) : null;
+
+    // Filter out links to files with non-website extensions
+    if (
+      fileExtension &&
+      !["html", "htm", "php", "asp", "aspx", "jsp", "cfm", "shtml"].includes(
+        fileExtension,
+      )
+    )
+      return;
+
     authKeywords.forEach(({ regex, weight }) => {
-      // Reset regex lastIndex to ensure proper matching
       regex.lastIndex = 0;
       if (regex.test(lowerLink)) {
         score += weight * 2;
@@ -89,56 +171,75 @@ export function extractAuthCandidates(emailBody: string): AuthCandidate[] {
       });
     }
 
+    // Get the position of the last character of the link
+    const linkEndIndex = emailBody.lastIndexOf(link) + link.length;
+
+    const positionPercentage = Math.round(
+      (linkEndIndex / emailBody.length) * 100,
+    );
+
+    // Penalize links that are at
+    if (positionPercentage > 80) score -= 15;
     candidates.push({ type: "link", value: link, score });
   });
 
-  // Remove all links from email body before searching for codes
   let emailBodyWithoutLinks = emailBody;
   linkMatches.forEach((link) => {
     emailBodyWithoutLinks = emailBodyWithoutLinks.replace(link, " ");
   });
 
-  const codeRegex = /\b(?=.*\d)[-*A-Za-z0-9]{4,25}\b/g;
-  const codeMatches = emailBodyWithoutLinks.match(codeRegex) || [];
+  // const codeBodyRegex = "([-*A-Za-z0-9 ]{4,11})[\\t ]*";
+
+  const codeMatches = [
+    // Matches code-like words in its own line
+    ...([
+      ...emailBodyWithoutLinks.matchAll(
+        new RegExp(`^[\\t ]*${codeBodyRegex}$`, "gm"),
+      ),
+    ]?.map((r) => r[1]) || []),
+    // Matches code-like words after colon, like "Your code is: 123456"
+    ...([
+      ...emailBodyWithoutLinks.matchAll(
+        new RegExp(`:[\\t ]*${codeBodyRegex}`, "gm"),
+      ),
+    ]?.map((r) => r[1]) || []),
+  ];
 
   const exclusionPatterns = [
-    /\d+px/,
-    /\d+em/,
-    /\d+rem/,
-    /\d+%/,
-    /head.*/,
-    /rgb\(\d+,\s*\d+,\s*\d+\)/,
-    /#[0-9A-Fa-f]{3,6}/,
+    // IP Addresses
     /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,
+    // Dates
     /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{1,2}\b/,
+    // Times
     /\b\d{1,2}:\d{2}\b/,
-    /\bhead\b|\bbody\b|\bhtml\b|\bscript\b|\bstyle\b/,
+    // Years
     /^(19|20)\d{2}$/,
   ];
 
-  codeMatches.forEach((code) => {
-    if (exclusionPatterns.some((pattern) => pattern.test(code))) {
-      return;
-    }
+  const lengthScores = {
+    4: 12,
+    5: 15,
+    6: 15,
+    7: 15,
+    8: 14,
+    9: 13,
+    10: 12,
+    11: 10,
+  };
 
-    let score = 0;
-    // Find the code position in the original email body for context analysis
+  codeMatches.forEach((code) => {
+    if (exclusionPatterns.some((pattern) => pattern.test(code))) return;
+
+    let score = 20;
     const codeIndex = emailBody.indexOf(code);
 
-    // Skip if this code appears to be part of a link we already processed
-    const isInLink = linkMatches.some((link) => link.includes(code));
-    if (isInLink) {
-      return;
-    }
-
     const digitCount = (code.match(/\d/g) || []).length;
-    score += digitCount * 3;
+    score +=
+      lengthScores[digitCount as unknown as keyof typeof lengthScores] || 0;
 
     authKeywords.forEach(({ regex, weight }) => {
       regex.lastIndex = 0;
-      const matches = [
-        ...lowerEmailBody.matchAll(new RegExp(regex.source, "gi")),
-      ];
+      const matches = [...emailBody.matchAll(new RegExp(regex.source, "gi"))];
 
       matches.forEach((match) => {
         const keywordIndex = match.index!;
@@ -166,12 +267,9 @@ export function extractAuthCandidates(emailBody: string): AuthCandidate[] {
       codeIndex + code.length + 15,
     );
 
+    // Penalize possible phone numbers
     if (/\d{1,3}[-.\s]?\d{3}[-.\s]?\d{3,4}[-.\s]?\d{4}/.test(contextAround)) {
       score -= 15;
-    }
-
-    if (code.length >= 6 && code.length <= 8 && /^\d+$/.test(code)) {
-      score += 10;
     }
 
     candidates.push({ type: "code", value: code, score });

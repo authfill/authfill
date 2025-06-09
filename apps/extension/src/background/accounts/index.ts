@@ -15,14 +15,7 @@ export async function addAccount(account: GoogleAccount | CustomAccount) {
   );
 }
 
-export async function patchAccount(
-  email: string,
-  account: GoogleAccount | CustomAccount,
-) {
-  const index = accounts.findIndex((a) => a.config.email === email);
-  if (index === -1) throw new Error("No account found for this email");
-
-  accounts[index] = account;
+export async function syncAccounts() {
   await setStorage(
     "accounts",
     accounts.map((a) => a.toConfig()),

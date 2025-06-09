@@ -3,7 +3,6 @@ import { hasValidUrl } from "@extension/background/utils/tab";
 import { Email, EmailBase } from "@extension/types/email";
 import { extractAuthCandidates } from "@extension/utils/detection";
 import { id } from "@extension/utils/id";
-import { htmlToText } from "html-to-text";
 
 export let emailCache: Email[] = [];
 
@@ -11,13 +10,16 @@ export function addEmails(emails: EmailBase[], accountId: string) {
   for (const emailBase of emails) {
     const email: Email = { ...emailBase, id: id("mail"), accountId };
 
-    const candidates = extractAuthCandidates(
-      email.text ? email.text : htmlToText(email.html),
-    );
-    console.log(email.subject, candidates);
+    const candidates = extractAuthCandidates({
+      html: emailBase.html,
+      text: emailBase.text,
+    });
     if (!candidates.length) continue;
 
     const topScorer = candidates[0];
+
+    // TODO: add null check and threshold
+
     if (topScorer.type === "link") {
       email.link = topScorer.value;
     } else if (topScorer.type === "code") {

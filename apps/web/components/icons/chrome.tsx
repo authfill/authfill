@@ -20,8 +20,8 @@ export default function ChromeIcon({ className }: Props) {
           y2="15"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#d93025" />
-          <stop offset="1" stop-color="#ea4335" />
+          <stop offset="0" stopColor="#d93025" />
+          <stop offset="1" stopColor="#ea4335" />
         </linearGradient>
         <linearGradient
           id="b"
@@ -31,8 +31,8 @@ export default function ChromeIcon({ className }: Props) {
           y2="11.6837"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#fcc934" />
-          <stop offset="1" stop-color="#fbbc04" />
+          <stop offset="0" stopColor="#fcc934" />
+          <stop offset="1" stopColor="#fbbc04" />
         </linearGradient>
         <linearGradient
           id="c"
@@ -42,8 +42,8 @@ export default function ChromeIcon({ className }: Props) {
           y2="10.506"
           gradientUnits="userSpaceOnUse"
         >
-          <stop offset="0" stop-color="#1e8e3e" />
-          <stop offset="1" stop-color="#34a853" />
+          <stop offset="0" stopColor="#1e8e3e" />
+          <stop offset="1" stopColor="#34a853" />
         </linearGradient>
       </defs>
       <circle
