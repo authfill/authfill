@@ -26,7 +26,7 @@ export function ConfirmEmailDelete({
   const queryClient = useQueryClient();
   const { sendToBackground } = useBackground();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["accounts", "delete"],
     mutationFn: async () => {
       if (!selectedAccount) return;
@@ -56,7 +56,7 @@ export function ConfirmEmailDelete({
         </AlertDialogHeader>
         <AlertDialogFooter className="mt-2">
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button onClick={() => mutate()} loading={isLoading}>
+          <Button onClick={() => mutate()} loading={isPending}>
             Continue
           </Button>
         </AlertDialogFooter>
