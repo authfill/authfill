@@ -3,7 +3,7 @@ name: Extension Release Pipeline
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+' # Trigger on tags like v1.0.0, v1.2.3
+      - "v[0-9]+.[0-9]+.[0-9]+" # Trigger on tags like v1.0.0, v1.2.3
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
 jobs:
@@ -22,8 +22,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Specify your Node.js version
-          cache: 'pnpm' # Cache pnpm dependencies
+          node-version: "20" # Specify your Node.js version
+          cache: "pnpm" # Cache pnpm dependencies
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -45,7 +45,7 @@ jobs:
           # Then zip -r ../../../extension-chrome.zip chrome
           # This puts the zip file in the root of the workflow's working directory
 
-      - name: Upload artifact: ${{ matrix.platform }} build
+      - name: Upload artifact ${{ matrix.platform }} build
         uses: actions/upload-artifact@v4
         with:
           name: extension-${{ matrix.platform }}-build
