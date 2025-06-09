@@ -13,6 +13,7 @@ export function addEmails(emails: EmailBase[], accountId: string) {
     const candidates = extractAuthCandidates({
       html: emailBase.html,
       text: emailBase.text,
+      subject: emailBase.subject,
     });
     if (!candidates.length) continue;
 

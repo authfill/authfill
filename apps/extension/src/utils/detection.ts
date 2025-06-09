@@ -51,9 +51,11 @@ codeBodyRegex += ")";
 export function extractAuthCandidates({
   html,
   text,
+  subject,
 }: {
   html?: string;
   text?: string;
+  subject?: string;
 }): AuthCandidate[] {
   let emailBody = text || "";
   if (html)
@@ -67,6 +69,8 @@ export function extractAuthCandidates({
         },
       ],
     });
+
+  if (subject) emailBody = `${subject}\n\n${emailBody}`;
 
   // Replace non-breaking spaces with regular spaces
   emailBody = emailBody.replace(/ /g, " ");
@@ -122,7 +126,7 @@ export function extractAuthCandidates({
   ];
 
   const linkRegex = /(https?:\/\/[^\s]+)/g;
-  const linkMatches = emailBody.match(linkRegex) || [];
+  const linkMatches = uniqueArray(emailBody.match(linkRegex) || []);
 
   linkMatches.forEach((rawLink) => {
     let score = 20;
@@ -190,7 +194,7 @@ export function extractAuthCandidates({
 
   // const codeBodyRegex = "([-*A-Za-z0-9 ]{4,11})[\\t ]*";
 
-  const codeMatches = [
+  const codeMatches = uniqueArray([
     // Matches code-like words in its own line
     ...([
       ...emailBodyWithoutLinks.matchAll(
@@ -203,7 +207,7 @@ export function extractAuthCandidates({
         new RegExp(`:[\\t ]*${codeBodyRegex}`, "gm"),
       ),
     ]?.map((r) => r[1]) || []),
-  ];
+  ]);
 
   const exclusionPatterns = [
     // IP Addresses
@@ -280,4 +284,8 @@ export function extractAuthCandidates({
 
 function sanitizeLink(url: string): string {
   return url.replace(/[\.\,\;\:\)\]\}]+$/g, "");
+}
+
+function uniqueArray<T>(array: T[]) {
+  return [...new Set(array)];
 }
