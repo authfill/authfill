@@ -17,6 +17,9 @@ export function addEmails(emails: EmailBase[], accountId: string) {
     if (!candidates.length) continue;
 
     const topScorer = candidates[0];
+
+    // TODO: add null check and threshold
+
     if (topScorer.type === "link") {
       email.link = topScorer.value;
     } else if (topScorer.type === "code") {
