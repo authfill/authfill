@@ -1,0 +1,86 @@
+name: Extension Release Pipeline
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Trigger on tags like v1.0.0, v1.2.3
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10 # Set a timeout for the build job
+
+    strategy:
+      matrix:
+        platform: [chrome, firefox, opera]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile]
+
+      - name: Build extension for ${{ matrix.platform }}
+        run: pnpm --filter extension build
+
+      - name: Archive extension build for ${{ matrix.platform }}
+        # This will create a zip file for each platform
+        # Adjust 'apps/extension/dist/${{ matrix.platform }}' if your build output path is different
+        run: |
+          cd apps/extension/dist
+          zip -r ../../../extension-${{ matrix.platform }}.zip ${{ matrix.platform }}
+          # Example: cd /home/runner/work/your-repo/your-repo/apps/extension/dist
+          # Then zip -r ../../../extension-chrome.zip chrome
+          # This puts the zip file in the root of the workflow's working directory
+
+      - name: Upload artifact ${{ matrix.platform }} build
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-${{ matrix.platform }}-build
+          path: extension-${{ matrix.platform }}.zip # Path to the zipped artifact
+          retention-days: 7 # How long to keep the artifact
+
+  create-github-release:
+    needs: build # This job depends on the 'build' job completing successfully
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') # Only run this if the workflow was triggered by a tag push
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts # Download artifacts into a directory named 'artifacts'
+
+      - name: Get tag name
+        id: get_tag
+        run: echo "TAG_NAME=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_tag.outputs.TAG_NAME }}
+          name: Release ${{ steps.get_tag.outputs.TAG_NAME }}
+          body: |
+            ## New Release: ${{ steps.get_tag.outputs.TAG_NAME }}
+
+            ---
+            **Assets:**
+            *   extension-chrome.zip
+            *   extension-firefox.zip
+            *   extension-opera.zip
+          draft: false # Set to true to create a draft release, false to publish immediately
+          prerelease: false # Set to true for pre-release versions (e.g., v1.0.0-beta)
+          files: |
+            artifacts/extension-chrome-build/extension-chrome.zip
+            artifacts/extension-firefox-build/extension-firefox.zip
+            artifacts/extension-opera-build/extension-opera.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is automatically provided by GitHub Actions
