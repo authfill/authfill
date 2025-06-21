@@ -9,7 +9,6 @@
     "start": "vinxi start"
   },
   "dependencies": {
-    "@authfill/conf": "workspace:*",
     "@authfill/hooks": "workspace:*",
     "@authfill/ui": "workspace:*",
     "@mdx-js/rollup": "^3.1.0",

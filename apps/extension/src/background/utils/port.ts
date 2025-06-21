@@ -30,6 +30,8 @@ export async function connectPort(id: string, runtime: browser.Runtime.Port) {
     account.connect();
   }
 
+  browser.runtime.sendMessage({ event: "popup.opened" });
+
   return port;
 }
 

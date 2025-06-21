@@ -10,7 +10,7 @@ const SwitchField = React.forwardRef<
     LabelContainerProps & {
       forgot?: string;
     }
->(({ className, labelClassName, containerClassName, label, ...props }) => {
+>(({ className, labelClassName, containerClassName, label, ...props }, ref) => {
   const field = useFieldContext<boolean>();
 
   return (
@@ -26,6 +26,7 @@ const SwitchField = React.forwardRef<
         name={field.name}
         checked={field.state.value}
         onCheckedChange={(checked) => field.handleChange(checked)}
+        ref={ref}
         {...props}
       />
     </LabelContainer>

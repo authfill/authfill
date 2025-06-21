@@ -25,7 +25,7 @@ export function useBackgroundListener(
         code: string;
       };
     }) => {
-      if (request.popupId !== popupId) return;
+      if (request.popupId && request.popupId !== popupId) return;
       if (request.event !== event) return;
 
       callback(request.data);

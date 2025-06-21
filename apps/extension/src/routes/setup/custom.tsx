@@ -55,17 +55,27 @@ function RouteComponent() {
         setAdvanced(true);
     },
     onSubmit: async ({ value }) => {
-      const promise = sendToBackground("auth.custom", value);
+      const promise = new Promise<
+        { success: true; count: number } | { success: false; error?: string }
+      >((res, rej) => {
+        sendToBackground("auth.custom", value).then((data) => {
+          if (data.success) res(data);
+          else rej(data);
+        });
+      });
 
       toast.promise(promise, {
         loading: "Testing email connection...",
         success: (res) => {
           if (!res.success)
             return "Connection failed! Please check your credentials.";
-          navigate({ to: "/setup/complete" });
-          return "Successfully authenticated!";
+
+          if ("count" in res && res.count === 1) navigate({ to: "/tutorial" });
+          else navigate({ to: "/setup/complete" });
+
+          return "Successfully connected your email account!";
         },
-        error: "Something went wrong! Please try again.",
+        error: (res) => res.error ?? "Something went wrong! Please try again.",
       });
     },
   });

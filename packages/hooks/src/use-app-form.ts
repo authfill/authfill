@@ -1,3 +1,4 @@
+import { OTPInput } from "@hooks/components/otp-input";
 import { PasswordField } from "@hooks/components/password-field";
 import { SubmitButton } from "@hooks/components/submit-button";
 import { SwitchField } from "@hooks/components/switch-field";
@@ -16,6 +17,7 @@ const { useAppForm } = createFormHook({
     TextField,
     PasswordField,
     SwitchField,
+    OTPInput,
   },
   formComponents: {
     SubmitButton,

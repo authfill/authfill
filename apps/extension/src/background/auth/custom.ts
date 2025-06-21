@@ -1,4 +1,4 @@
-import { addAccount } from "@extension/background/accounts";
+import { addAccount, listAccounts } from "@extension/background/accounts";
 import { CustomAccount } from "@extension/background/accounts/providers/custom";
 import { id } from "@extension/utils/id";
 import axios from "axios";
@@ -11,6 +11,13 @@ export async function authenticateCustom(data: {
   password: string;
   secure: boolean;
 }) {
+  const accounts = await listAccounts();
+  if (accounts.accounts.find((a) => a.email === data.email))
+    return {
+      success: false,
+      error: "This email is already connected.",
+    };
+
   try {
     const res = await axios.post(
       `${import.meta.env.PUBLIC_PROXY_URL}/imap/test`,
@@ -23,9 +30,16 @@ export async function authenticateCustom(data: {
       },
     );
 
-    if (!res.data.success) return { success: false };
+    if (!res.data.success)
+      return {
+        success: false,
+        error: "Connection failed! Please check your credentials.",
+      };
   } catch {
-    return { success: false };
+    return {
+      success: false,
+      error: "Connection failed! Please check your credentials.",
+    };
   }
 
   await addAccount(
@@ -44,5 +58,6 @@ export async function authenticateCustom(data: {
     }),
   );
 
-  return { success: true };
+  const updatedAccounts = await listAccounts();
+  return { success: true, count: updatedAccounts.accounts.length };
 }
