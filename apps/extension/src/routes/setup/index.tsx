@@ -1,9 +1,7 @@
 import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { useAppForm } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button } from "@ui/button";
 import axios from "axios";
-import { useCallback } from "react";
 import { xml2js } from "xml-js";
 import { z } from "zod";
 
@@ -27,7 +25,6 @@ function RouteComponent() {
     },
     onSubmit: async ({ value }) => {
       const host = value.email.split("@")[1];
-      if (host === "gmail.com") return authenticateGoogle();
 
       const imapConfig = await loadImapConfig(host);
 
@@ -90,10 +87,6 @@ function RouteComponent() {
     }
   }
 
-  const authenticateGoogle = useCallback(() => {
-    window.open(`${import.meta.env.PUBLIC_WEB_URL}/auth/google`);
-  }, []);
-
   return (
     <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
       <h1 className="text-center text-4xl font-bold tracking-tight">
@@ -101,22 +94,9 @@ function RouteComponent() {
       </h1>
       <p className="text-muted-foreground mt-4 text-center text-sm">
         To get started with AuthFill, please connect your email accounts with
-        the options shown below.
+        the input shown below.
       </p>
       <div className="mt-12 flex w-full max-w-full flex-col gap-8 sm:max-w-[18rem]">
-        <Button
-          variant="secondary"
-          onClick={authenticateGoogle}
-          className="w-full"
-        >
-          <img src="/gmail.svg" className="mr-2 size-4" />
-          Connect to Gmail
-        </Button>
-        <div className="flex items-center gap-5">
-          <hr className="border-muted-foreground/50 w-full" />
-          <p className="text-muted-foreground text-sm">Or</p>
-          <hr className="border-muted-foreground/50 w-full" />
-        </div>
         <form
           onSubmit={(e) => {
             e.preventDefault();

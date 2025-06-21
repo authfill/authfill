@@ -1,5 +1,3 @@
-import { exchangeGoogleCode } from "@proxy/controller/auth/google/exchange";
-import { refreshGoogleToken } from "@proxy/controller/auth/google/refresh";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { testImapConnection } from "./controller/imap/test";
@@ -21,8 +19,6 @@ const app = new Hono<AppBindings>();
 app.use("*", cors({ origin: "*" }));
 
 app.post("/imap/test", testImapConnection);
-app.post("/auth/google", exchangeGoogleCode);
-app.post("/auth/google/refresh", refreshGoogleToken);
 app.get("/imap", handleImapWebSocket);
 
 export default app;

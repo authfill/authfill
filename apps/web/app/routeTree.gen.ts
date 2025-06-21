@@ -15,10 +15,6 @@ import { Route as TermsImport } from './routes/terms'
 import { Route as PrivacyImport } from './routes/privacy'
 import { Route as ImprintImport } from './routes/imprint'
 import { Route as IndexImport } from './routes/index'
-import { Route as AuthGoogleRouteImport } from './routes/auth/google/route'
-import { Route as AuthGoogleIndexImport } from './routes/auth/google/index'
-import { Route as AuthGoogleMissingScopeImport } from './routes/auth/google/missing-scope'
-import { Route as AuthGoogleCallbackImport } from './routes/auth/google/callback'
 
 // Create/Update Routes
 
@@ -44,30 +40,6 @@ const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
-} as any)
-
-const AuthGoogleRouteRoute = AuthGoogleRouteImport.update({
-  id: '/auth/google',
-  path: '/auth/google',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const AuthGoogleIndexRoute = AuthGoogleIndexImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthGoogleRouteRoute,
-} as any)
-
-const AuthGoogleMissingScopeRoute = AuthGoogleMissingScopeImport.update({
-  id: '/missing-scope',
-  path: '/missing-scope',
-  getParentRoute: () => AuthGoogleRouteRoute,
-} as any)
-
-const AuthGoogleCallbackRoute = AuthGoogleCallbackImport.update({
-  id: '/callback',
-  path: '/callback',
-  getParentRoute: () => AuthGoogleRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -102,64 +74,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsImport
       parentRoute: typeof rootRoute
     }
-    '/auth/google': {
-      id: '/auth/google'
-      path: '/auth/google'
-      fullPath: '/auth/google'
-      preLoaderRoute: typeof AuthGoogleRouteImport
-      parentRoute: typeof rootRoute
-    }
-    '/auth/google/callback': {
-      id: '/auth/google/callback'
-      path: '/callback'
-      fullPath: '/auth/google/callback'
-      preLoaderRoute: typeof AuthGoogleCallbackImport
-      parentRoute: typeof AuthGoogleRouteImport
-    }
-    '/auth/google/missing-scope': {
-      id: '/auth/google/missing-scope'
-      path: '/missing-scope'
-      fullPath: '/auth/google/missing-scope'
-      preLoaderRoute: typeof AuthGoogleMissingScopeImport
-      parentRoute: typeof AuthGoogleRouteImport
-    }
-    '/auth/google/': {
-      id: '/auth/google/'
-      path: '/'
-      fullPath: '/auth/google/'
-      preLoaderRoute: typeof AuthGoogleIndexImport
-      parentRoute: typeof AuthGoogleRouteImport
-    }
   }
 }
 
 // Create and export the route tree
-
-interface AuthGoogleRouteRouteChildren {
-  AuthGoogleCallbackRoute: typeof AuthGoogleCallbackRoute
-  AuthGoogleMissingScopeRoute: typeof AuthGoogleMissingScopeRoute
-  AuthGoogleIndexRoute: typeof AuthGoogleIndexRoute
-}
-
-const AuthGoogleRouteRouteChildren: AuthGoogleRouteRouteChildren = {
-  AuthGoogleCallbackRoute: AuthGoogleCallbackRoute,
-  AuthGoogleMissingScopeRoute: AuthGoogleMissingScopeRoute,
-  AuthGoogleIndexRoute: AuthGoogleIndexRoute,
-}
-
-const AuthGoogleRouteRouteWithChildren = AuthGoogleRouteRoute._addFileChildren(
-  AuthGoogleRouteRouteChildren,
-)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/auth/google': typeof AuthGoogleRouteRouteWithChildren
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
-  '/auth/google/': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -167,9 +91,6 @@ export interface FileRoutesByTo {
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
-  '/auth/google': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRoutesById {
@@ -178,42 +99,14 @@ export interface FileRoutesById {
   '/imprint': typeof ImprintRoute
   '/privacy': typeof PrivacyRoute
   '/terms': typeof TermsRoute
-  '/auth/google': typeof AuthGoogleRouteRouteWithChildren
-  '/auth/google/callback': typeof AuthGoogleCallbackRoute
-  '/auth/google/missing-scope': typeof AuthGoogleMissingScopeRoute
-  '/auth/google/': typeof AuthGoogleIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/imprint'
-    | '/privacy'
-    | '/terms'
-    | '/auth/google'
-    | '/auth/google/callback'
-    | '/auth/google/missing-scope'
-    | '/auth/google/'
+  fullPaths: '/' | '/imprint' | '/privacy' | '/terms'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/imprint'
-    | '/privacy'
-    | '/terms'
-    | '/auth/google/callback'
-    | '/auth/google/missing-scope'
-    | '/auth/google'
-  id:
-    | '__root__'
-    | '/'
-    | '/imprint'
-    | '/privacy'
-    | '/terms'
-    | '/auth/google'
-    | '/auth/google/callback'
-    | '/auth/google/missing-scope'
-    | '/auth/google/'
+  to: '/' | '/imprint' | '/privacy' | '/terms'
+  id: '__root__' | '/' | '/imprint' | '/privacy' | '/terms'
   fileRoutesById: FileRoutesById
 }
 
@@ -222,7 +115,6 @@ export interface RootRouteChildren {
   ImprintRoute: typeof ImprintRoute
   PrivacyRoute: typeof PrivacyRoute
   TermsRoute: typeof TermsRoute
-  AuthGoogleRouteRoute: typeof AuthGoogleRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -230,7 +122,6 @@ const rootRouteChildren: RootRouteChildren = {
   ImprintRoute: ImprintRoute,
   PrivacyRoute: PrivacyRoute,
   TermsRoute: TermsRoute,
-  AuthGoogleRouteRoute: AuthGoogleRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -246,8 +137,7 @@ export const routeTree = rootRoute
         "/",
         "/imprint",
         "/privacy",
-        "/terms",
-        "/auth/google"
+        "/terms"
       ]
     },
     "/": {
@@ -261,26 +151,6 @@ export const routeTree = rootRoute
     },
     "/terms": {
       "filePath": "terms.tsx"
-    },
-    "/auth/google": {
-      "filePath": "auth/google/route.tsx",
-      "children": [
-        "/auth/google/callback",
-        "/auth/google/missing-scope",
-        "/auth/google/"
-      ]
-    },
-    "/auth/google/callback": {
-      "filePath": "auth/google/callback.tsx",
-      "parent": "/auth/google"
-    },
-    "/auth/google/missing-scope": {
-      "filePath": "auth/google/missing-scope.tsx",
-      "parent": "/auth/google"
-    },
-    "/auth/google/": {
-      "filePath": "auth/google/index.tsx",
-      "parent": "/auth/google"
     }
   }
 }

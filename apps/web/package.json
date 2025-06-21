@@ -13,7 +13,6 @@
     "@authfill/hooks": "workspace:*",
     "@authfill/ui": "workspace:*",
     "@mdx-js/rollup": "^3.1.0",
-    "@react-oauth/google": "^0.12.2",
     "@tanstack/react-router": "^1.115.0",
     "@tanstack/react-start": "^1.120.13",
     "axios": "^1.9.0",

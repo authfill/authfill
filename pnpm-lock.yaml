@@ -199,9 +199,6 @@ importers:
       '@mdx-js/rollup':
         specifier: ^3.1.0
         version: 3.1.0(acorn@8.14.1)(rollup@4.41.1)
-      '@react-oauth/google':
-        specifier: ^0.12.2
-        version: 0.12.2(react-dom@19.1.0)(react@19.1.0)
       '@tanstack/react-router':
         specifier: ^1.115.0
         version: 1.120.13(react-dom@19.1.0)(react@19.1.0)
@@ -2892,16 +2889,6 @@ packages:
       '@radix-ui/react-use-layout-effect': 1.1.1(@types/react@19.1.6)(react@19.1.0)
       '@types/react': 19.1.6
       react: 19.1.0
-    dev: false
-
-  /@react-oauth/google@0.12.2(react-dom@19.1.0)(react@19.1.0):
-    resolution: {integrity: sha512-d1GVm2uD4E44EJft2RbKtp8Z1fp/gK8Lb6KHgs3pHlM0PxCXGLaq8LLYQYENnN4xPWO1gkL4apBtlPKzpLvZwg==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      react: 19.1.0
-      react-dom: 19.1.0(react@19.1.0)
     dev: false
 
   /@rolldown/pluginutils@1.0.0-beta.9:

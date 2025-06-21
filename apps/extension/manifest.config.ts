@@ -30,9 +30,6 @@ export default defineManifest(async (env) => ({
     "48": "public/icons/icon-dark-48x48.png",
     "128": "public/icons/icon-dark-128x128.png",
   },
-  externally_connectable: {
-    matches: ["https://*.authfill.com/*", "http://localhost:3000/*"],
-  },
   content_security_policy: {
     extension_pages: `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' ws://localhost:3001 https://autoconfig.thunderbird.net https://gmail.googleapis.com ${process.env.PUBLIC_WSS_URL} ${process.env.PUBLIC_EXTENSION_URL} ${process.env.PUBLIC_PROXY_URL}`,
   },

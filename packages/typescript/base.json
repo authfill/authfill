@@ -21,7 +21,6 @@
     "paths": {
       "@ui/*": ["./packages/ui/src/*"],
       "@hooks/*": ["./packages/hooks/src/*"],
-      "@conf/*": ["./packages/conf/src/*"],
       "@extension/*": ["./apps/extension/src/*"],
       "@web/*": ["./apps/web/*"],
       "@proxy/*": ["./apps/proxy/src/*"]
