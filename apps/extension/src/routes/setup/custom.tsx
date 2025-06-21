@@ -1,9 +1,10 @@
 import { useBackground } from "@extension/hooks/use-background";
 import { useDocumentTitle } from "@extension/hooks/use-document-title";
-import { useAppForm } from "@hooks/use-app-form";
+import { useAppForm, useStore } from "@hooks/use-app-form";
 import { createFileRoute } from "@tanstack/react-router";
-import { MinusIcon, PlusIcon } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@ui/alert";
+import { InfoIcon, MinusIcon, PlusIcon } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -83,6 +84,15 @@ function RouteComponent() {
     else passwordRef.current?.focus();
   }, [passwordRef, userRef, search]);
 
+  const values = useStore(form.store, (state) => state.values);
+
+  const isGmail = useMemo(
+    () =>
+      values.host === "imap.gmail.com" ||
+      String(values.email).match(/@gmail.com$/),
+    [values],
+  );
+
   return (
     <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
       <h1 className="text-center text-4xl font-bold tracking-tight">
@@ -122,11 +132,38 @@ function RouteComponent() {
           {(field) => (
             <field.PasswordField
               ref={passwordRef}
-              label="Email Password"
+              label={isGmail ? "App Password" : "Email Password"}
               placeholder="*******"
+              end={
+                isGmail ? (
+                  <a
+                    href="https://support.google.com/accounts/answer/185833"
+                    target="_blank"
+                    className="text-xs text-blue-500 underline"
+                  >
+                    Create app password
+                  </a>
+                ) : null
+              }
             />
           )}
         </form.AppField>
+        {isGmail ? (
+          <Alert variant="info">
+            <InfoIcon />
+            <AlertTitle>Gmail requires an App Password</AlertTitle>
+            <AlertDescription>
+              To use Gmail, you will need to{" "}
+              <a
+                href="https://support.google.com/accounts/answer/185833"
+                target="_blank"
+                className="underline"
+              >
+                create an app password.
+              </a>
+            </AlertDescription>
+          </Alert>
+        ) : null}
         <button
           type="button"
           className="flex w-full cursor-pointer items-center justify-between"
