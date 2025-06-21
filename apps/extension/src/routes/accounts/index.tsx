@@ -43,28 +43,16 @@ function RouteComponent() {
             {accounts?.map((account) => (
               <div key={account.id} className="flex items-center gap-3">
                 <div className="bg-foreground/5 border-foreground/20 flex size-10 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border">
-                  {"avatar" in account && account.avatar ? (
-                    <img src={account.avatar} className="w-full" alt="Avatar" />
-                  ) : account.type === "google" ? (
-                    <img
-                      src="/gmail.svg"
-                      className="size-5"
-                      alt="Google Logo"
-                    />
-                  ) : (
-                    <MailIcon className="size-5" />
-                  )}
+                  <MailIcon className="size-5" />
                 </div>
                 <div className="min-w-0 grow">
                   <h2 className="truncate text-base font-medium tracking-tight">
                     {account.email}
                   </h2>
                   <p className="text-muted-foreground -mt-0.5 text-sm">
-                    {account.type === "google"
-                      ? "mail.google.com"
-                      : "host" in account.credentials
-                        ? account.credentials.host
-                        : ""}
+                    {"host" in account.credentials
+                      ? account.credentials.host
+                      : ""}
                   </p>
                 </div>
                 <Button

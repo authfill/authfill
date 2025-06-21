@@ -1,10 +1,9 @@
 import { CustomAccount } from "@extension/background/accounts/providers/custom";
-import { GoogleAccount } from "@extension/background/accounts/providers/google";
 import { getStorage, setStorage } from "@extension/utils/storage";
 
-let accounts: (GoogleAccount | CustomAccount)[] = [];
+let accounts: CustomAccount[] = [];
 
-export async function addAccount(account: GoogleAccount | CustomAccount) {
+export async function addAccount(account: CustomAccount) {
   accounts = await readAccounts();
 
   accounts.push(account);
@@ -31,11 +30,7 @@ export async function readAccounts() {
     if (index !== -1) {
       accounts[index].config = config;
     } else {
-      accounts.push(
-        config.type === "google"
-          ? new GoogleAccount(config)
-          : new CustomAccount(config),
-      );
+      accounts.push(new CustomAccount(config));
     }
   }
 

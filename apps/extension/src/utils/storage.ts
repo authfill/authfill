@@ -5,17 +5,6 @@ export interface BaseAccountConfig {
   email: string;
 }
 
-export interface GoogleAccountConfig extends BaseAccountConfig {
-  type: "google";
-  name?: string;
-  avatar?: string;
-  credentials: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-  };
-}
-
 export interface CustomAccountConfig extends BaseAccountConfig {
   type: "custom";
   credentials: {
@@ -28,7 +17,7 @@ export interface CustomAccountConfig extends BaseAccountConfig {
   };
 }
 
-export type AccountConfig = GoogleAccountConfig | CustomAccountConfig;
+export type AccountConfig = CustomAccountConfig;
 
 export interface Storage {
   accounts: AccountConfig[];
