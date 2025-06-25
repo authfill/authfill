@@ -1,0 +1,63 @@
+# Privacy Policy
+
+**Last updated:** June 6, 2025<br />
+
+AuthFill is a Chrome extension designed to simplify the autofilling of OTP (One-Time Password) codes and verification links. Your privacy is very important to us. This Privacy Policy explains how AuthFill handles your information.<br />
+
+### 1. Data We Do Not Persistently Store
+
+AuthFill is designed with a strong commitment to user privacy. We do not:<br />
+
+- **Persistently store any personal data on our servers** related to your email content, OTP codes, or verification links once processed.<br />
+- **Generate or collect any logs** related to your usage or the content of your emails within the extension or on our servers, beyond what is necessary for the immediate processing detailed below.<br />
+
+### 2. Data We Process and How It Works
+
+AuthFill operates by processing certain data to provide its core functionality. This section explains what data is processed and how:<br />
+
+- **AuthFill Login Credentials:** When you log into AuthFill with your email and password or Google OAuth, these credentials (or the Google OAuth token) are stored **locally within your Chrome extension's secure storage.** They are used to authenticate your access to the AuthFill service and never leave your browser for storage on our servers.<br />
+
+- **IMAP Credentials and Email Content (Server-Side Processing):** To fetch OTP codes and verification links directly from your emails, you have the option to provide your IMAP account credentials within the AuthFill extension. **When you enable this feature, these IMAP credentials are securely sent to our server.** Our server then uses these credentials for a very **short, ephemeral timespan** to connect to your email provider (e.g., Gmail, Outlook) and fetch the newest emails in your inbox. This process is solely for the purpose of identifying and extracting relevant OTP codes or verification links.<br />
+
+  - **Data Minimization:** We only process the email data necessary to find OTPs or verification links.<br />
+  - **No Storage:** Your IMAP credentials are **not stored on our servers** after the immediate processing for a given fetching request. Email content is also **not stored on our servers** persistently after it has been scanned for OTPs/links. It is processed in memory and immediately discarded.<br />
+  - **Purpose Limitation:** This processing is exclusively for providing the autofill feature.<br />
+
+### 3. Open-Source Code for Maximum Trust
+
+To ensure maximum transparency and trust, **AuthFill's entire code is open-source and publicly available** for review. This means you or security experts can inspect how the extension and our server-side components handle your data and verify that our claims regarding data privacy are accurate. You can find our code at:<br />
+[github.com/authfill/authfill](https://github.com/authfill/authfill)<br />
+
+### 4. Server Infrastructure and Third-Party Services (Cloudflare)
+
+Our server infrastructure is hosted on **Cloudflare**. While AuthFill itself does not persistently store your personal data, Cloudflare, as a network infrastructure provider, may collect standard server logs for security, performance, and operational purposes. This is common practice for online services. These logs typically include information such as:<br />
+
+- IP addresses<br />
+- Browser type and version<br />
+- Operating system<br />
+- Referrer URLs<br />
+- Time of access<br />
+
+AuthFill has no control over Cloudflare's logging practices, which are governed by Cloudflare's own privacy policy. For more information on how Cloudflare handles data, please refer to their privacy policy directly.<br />
+
+### 5. No Sharing of Your Personal Data
+
+We do not sell, trade, or otherwise transfer your personal data (including IMAP credentials or email content) to outside parties. The IMAP credentials and email content are processed solely for the purpose of delivering the AuthFill service to you, as described above, and are not shared with any third parties beyond the necessary connection to your email provider.<br />
+
+### 6. Data Security
+
+We are committed to protecting the security of your information. AuthFill relies on Chrome's secure local storage mechanisms for storing your AuthFill login credentials within the extension. When IMAP credentials and email content are processed on our server, we implement technical and organizational measures to protect this data while it is in transit and being processed. This includes the use of encryption (e.g., HTTPS/TLS) for data transmission and secure processing environments. While no method of transmission over the internet or method of electronic storage is 100% secure, we strive to use commercially acceptable means to protect your information.<br />
+
+### 7. Children's Privacy
+
+AuthFill is not intended for use by children under the age of 16, and we do not knowingly collect personally identifiable information from children under 16. If you are a parent or guardian and you learn that your child has provided us with personal data, please contact us. If we become aware that we have collected personal data from a child under the age of 16 without verification of parental consent, we will take steps to remove that information from our servers.<br />
+
+### 8. Changes to This Privacy Policy
+
+We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page within the AuthFill extension's listing or website. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.<br />
+
+### 9. Contact Us
+
+If you have any questions about this Privacy Policy, please contact us:<br />
+
+- By email: support@authfill.com<br />

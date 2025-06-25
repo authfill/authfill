@@ -1,0 +1,95 @@
+name: Extension Release Pipeline
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+      matrix:
+        platform: [chrome, edge, firefox, opera]
+
+    env:
+      PUBLIC_PROXY_URL: ${{ vars.PUBLIC_PROXY_URL }}
+      PUBLIC_WEB_URL: ${{ vars.PUBLIC_WEB_URL }}
+      PUBLIC_WSS_URL: ${{ vars.PUBLIC_WSS_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.14.0"
+
+      - name: Update extension version
+        run: |
+          node -e "
+            const fs = require('fs');
+            const packagePath = 'apps/extension/package.json';
+            const package = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+            const version = process.env.GITHUB_REF.replace('refs/tags/v', '');
+            package.version = version;
+            fs.writeFileSync(packagePath, JSON.stringify(package, null, 2) + '\n');
+          "
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8.15.6
+          run_install: |
+            - recursive: true
+              args: [--frozen-lockfile]
+
+      - name: Build extension for ${{ matrix.platform }}
+        run: pnpm --filter extension build:${{ matrix.platform }}
+
+      - name: Archive extension build for ${{ matrix.platform }}
+        run: |
+          cd apps/extension/dist
+          zip -r ../../../authfill-${{ matrix.platform }}.zip .
+
+      - name: Upload artifact ${{ matrix.platform }} build
+        uses: actions/upload-artifact@v4
+        with:
+          name: authfill-${{ matrix.platform }}-build
+          path: authfill-${{ matrix.platform }}.zip
+          retention-days: 7
+
+  create-github-release:
+    needs: build
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+
+    steps:
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Get tag name
+        id: get_tag
+        run: echo "TAG_NAME=$(echo ${GITHUB_REF#refs/tags/})" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+
+        with:
+          tag_name: ${{ steps.get_tag.outputs.TAG_NAME }}
+          name: AuthFill ${{ steps.get_tag.outputs.TAG_NAME }}
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/authfill-chrome-build/authfill-chrome.zip
+            artifacts/authfill-edge-build/authfill-edge.zip
+            artifacts/authfill-firefox-build/authfill-firefox.zip
+            artifacts/authfill-opera-build/authfill-opera.zip

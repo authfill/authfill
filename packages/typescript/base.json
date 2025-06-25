@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "rootDir": "../..",
+    "baseUrl": "../..",
+    "paths": {
+      "@ui/*": ["./packages/ui/src/*"],
+      "@hooks/*": ["./packages/hooks/src/*"],
+      "@extension/*": ["./apps/extension/src/*"],
+      "@web/*": ["./apps/web/src/*"],
+      "@proxy/*": ["./apps/proxy/src/*"]
+    }
+  },
+  "exclude": ["node_modules"]
+}

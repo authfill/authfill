@@ -1,0 +1,39 @@
+{
+  "name": "web",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@authfill/hooks": "workspace:*",
+    "@authfill/ui": "workspace:*",
+    "@mdx-js/rollup": "^3.1.0",
+    "@tanstack/react-router": "^1.121.34",
+    "@tanstack/react-start": "^1.121.35",
+    "axios": "^1.9.0",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-device-detect": "^2.2.3",
+    "react-dom": "^19.0.0",
+    "react-parallax-tilt": "^1.7.298",
+    "sonner": "^2.0.4",
+    "tailwindcss": "^4.1.3",
+    "tw-animate-css": "^1.3.3",
+    "unenv": "^1.10.0"
+  },
+  "devDependencies": {
+    "@authfill/eslint": "workspace:*",
+    "@authfill/typescript": "workspace:*",
+    "@tailwindcss/vite": "^4.1.3",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "dotenv": "^16.5.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

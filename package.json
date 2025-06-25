@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "schema:dev": "prisma migrate dev --schema ./packages/schema/schema.prisma",
+    "schema:studio": "prisma studio --schema ./packages/schema/schema.prisma",
+    "schema:generate": "prisma generate --schema ./packages/schema/schema.prisma",
+    "schema:deploy": "prisma migrate deploy --schema ./packages/schema/schema.prisma",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-tailwindcss": "^0.6.12",
+    "prisma-kysely": "^1.8.0",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3"
+  },
+  "packageManager": "pnpm@8.15.6",
+  "name": "authfill"
+}
