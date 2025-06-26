@@ -40,7 +40,12 @@ export const handleEmailFetch = async (
 
   // 3) Send each over WebSocket
   for (const email of emails) {
-    if (!email.from || !email.date) continue;
+    if (!email.from || !email.date || !email.subject) continue;
+    const date = new Date(email.date);
+    if (isNaN(date.getTime())) {
+      continue;
+    }
+
     try {
       const message: WebSocketMessage = {
         type: "email",
@@ -246,7 +251,12 @@ export const handleIdleListen = async (
         });
 
         for (const mail of mails) {
-          if (!mail.from || !mail.date) continue;
+          if (!mail.from || !mail.date || !mail.subject) continue;
+          const date = new Date(mail.date);
+          if (isNaN(date.getTime())) {
+            continue;
+          }
+
           const message: WebSocketMessage = {
             type: "email",
             status: "success",
