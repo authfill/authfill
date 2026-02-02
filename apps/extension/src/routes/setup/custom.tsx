@@ -43,7 +43,7 @@ function RouteComponent() {
       onSubmit: z.object({
         email: z.string().email(),
         host: z.string().min(1),
-        port: z.number().min(1).max(65535),
+        port: z.coerce.number().min(1).max(65535),
         user: z.string().min(1),
         password: z.string().min(1),
         secure: z.boolean(),
