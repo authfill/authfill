@@ -19,12 +19,13 @@ export const handleEmailFetch = async (
   if (totalEmailCount == null) {
     throw new Error("No email key found while fetching emails");
   }
-  if (totalEmailCount < count) {
-    throw new Error("Not enough emails in the folder");
+  // 2) Fetch the last `count` messages (or fewer if not enough emails)
+  const fetchCount = Math.min(totalEmailCount, count);
+  if (fetchCount === 0) {
+    return 0;
   }
 
-  // 2) Fetch the last `count` messages
-  const lower = totalEmailCount - count + 1;
+  const lower = totalEmailCount - fetchCount + 1;
   const upper = totalEmailCount;
   let emails;
   try {
