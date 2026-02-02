@@ -99,7 +99,15 @@ function RouteComponent() {
       </h1>
       <p className="text-muted-foreground mt-4 text-center text-sm">
         Configure AuthFill to use a self-hosted proxy server for IMAP
-        connections.
+        connections.{" "}
+        <a
+          href="https://github.com/authfill/authfill/blob/main/docs/SELF_HOSTING.md"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary underline"
+        >
+          Learn more
+        </a>
       </p>
       <form
         onSubmit={(e) => {

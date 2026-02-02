@@ -22,7 +22,7 @@ The AuthFill proxy is a Cloudflare Worker that handles WebSocket connections for
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-org/authfill.git
+   git clone https://github.com/authfill/authfill.git
    cd authfill
    ```
 
@@ -56,14 +56,6 @@ The proxy will be available at `http://localhost:4000`.
 
 ## Configuration
 
-### Environment Variables
-
-The proxy uses the following environment variables:
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PUBLIC_WEB_URL` | URL of the AuthFill web app (for CORS) | - |
-
 ### Custom Domain (Cloudflare Workers)
 
 To use a custom domain:
@@ -71,7 +63,7 @@ To use a custom domain:
 1. Go to your Cloudflare dashboard
 2. Navigate to Workers & Pages
 3. Select your proxy worker
-4. Go to Settings > Triggers
+4. Go to Settings 
 5. Add a custom domain
 
 ## Configuring the Extension
@@ -95,8 +87,7 @@ The proxy exposes the following endpoints:
 ## Security Considerations
 
 - The proxy handles email credentials - deploy with HTTPS only
-- Consider restricting access via Cloudflare Access or IP allowlists
-- Credentials are transmitted encrypted but not stored by the proxy
+- Credentials are transmitted but not stored by the proxy
 - Review the proxy code before deployment to understand data handling
 
 ## Troubleshooting
