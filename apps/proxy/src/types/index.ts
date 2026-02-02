@@ -27,10 +27,6 @@ export interface ImapConfig {
 }
 
 export interface WebSocketMessage {
-  type: string;
-  status: string;
-  message?: string;
-  realtimeSupport?: boolean;
-  email?: EmailResponse;
-  revd?: string;
+  type: "email";
+  email: EmailResponse;
 }

@@ -2,7 +2,6 @@ import { WebSocket } from "@cloudflare/workers-types";
 import { handleEmailFetch, handleIdleListen } from "@proxy/handlers/websocket";
 import { Env } from "@proxy/index";
 import { checkIdleSupport, createImapConnection } from "@proxy/services/imap";
-import { WebSocketMessage } from "@proxy/types";
 import { CFImap } from "cf-imap";
 import { Handler } from "hono";
 import { upgradeWebSocket } from "hono/cloudflare-workers";
@@ -11,65 +10,42 @@ import { WSContext } from "hono/ws";
 export const handleImapWebSocket: Handler<{ Bindings: Env }, "/imap"> =
   upgradeWebSocket((c) => {
     let imap: CFImap | null = null;
-    let isConnected = false;
-    let isRealtime = false;
+    let pollInterval: ReturnType<typeof setInterval> | null = null;
 
     return {
       async onMessage(event: any, ws: WSContext<WebSocket>) {
         try {
           const data = JSON.parse(event.data);
 
-          switch (data.event) {
-            case "connect":
-              imap = createImapConnection(data.data);
-              await imap.connect();
-              isRealtime = await checkIdleSupport(imap);
-              isConnected = true;
+          if (data.event === "connect") {
+            imap = createImapConnection(data.data);
+            await imap.connect();
+            const isRealtime = await checkIdleSupport(imap);
 
-              const response: WebSocketMessage = {
-                type: "log",
-                status: "ok",
-                realtimeSupport: isRealtime,
-              };
-              ws.send(JSON.stringify(response));
-              break;
+            // Fetch initial emails
+            await handleEmailFetch(ws, imap, 10);
 
-            case "listen":
-              if (!isConnected || !imap || !isRealtime) {
-                throw new Error("Not connected or realtime not supported");
-              }
+            if (isRealtime) {
+              // Use IDLE for real-time listening
               await handleIdleListen(ws, imap);
-              break;
-
-            case "fetch-emails":
-              if (!isConnected || !imap) {
-                throw new Error("Not connected");
-              }
-              const emailCount = await handleEmailFetch(
-                ws,
-                imap,
-                data.data.count || 3,
-              );
-
-              const fetchResponse: WebSocketMessage = {
-                type: "log",
-                status: "fetched-emails",
-                message: `Fetched emails successfully (${emailCount} from ${data.data.count || 3})`,
-              };
-              ws.send(JSON.stringify(fetchResponse));
-              break;
+            } else {
+              // Poll every 3 seconds for latest 3 emails
+              pollInterval = setInterval(async () => {
+                if (imap) {
+                  await handleEmailFetch(ws, imap, 3);
+                }
+              }, 3000);
+            }
           }
         } catch (error: any) {
-          const errorResponse: WebSocketMessage = {
-            type: "log",
-            status: "error",
-            message: error.message,
-          };
-          ws.send(JSON.stringify(errorResponse));
+          ws.close(1011, error.message);
         }
       },
       onClose() {
-        if (isConnected && imap) {
+        if (pollInterval) {
+          clearInterval(pollInterval);
+        }
+        if (imap) {
           imap.logout();
         }
       },

@@ -50,7 +50,6 @@ export const handleEmailFetch = async (
     try {
       const message: WebSocketMessage = {
         type: "email",
-        status: "success",
         email: processEmail(email),
       };
       ws.send(JSON.stringify(message));
@@ -144,8 +143,6 @@ export const handleIdleListen = async (
       continue;
     }
 
-    // Notify client that we're successfully idling
-    ws.send(JSON.stringify({ status: "idling" }));
 
     // 3) Loop, reading server‐pushed lines until we see a “* n EXISTS” or a timeout
     let existsMatch: RegExpExecArray | null = null;
@@ -260,7 +257,6 @@ export const handleIdleListen = async (
 
           const message: WebSocketMessage = {
             type: "email",
-            status: "success",
             email: processEmail(mail),
           };
           ws.send(JSON.stringify(message));
