@@ -98,17 +98,11 @@ The proxy exposes the following endpoints:
 2. Check that the proxy is running and accessible
 3. Ensure CORS is configured to allow requests from the extension
 
-### WebSocket Connection Issues
-
-1. Verify the proxy supports WebSocket connections
-2. Check for any firewall or proxy blocking WebSocket upgrades
-3. Ensure the URL uses the correct protocol (`wss://` for HTTPS)
-
 ### IMAP Connection Errors
 
 1. Verify your email provider allows IMAP access
 2. Check that your credentials are correct
-3. Some providers require app-specific passwords (e.g., Gmail)
+3. Some providers require app-specific passwords (e.g. Gmail)
 
 ## Support
 
