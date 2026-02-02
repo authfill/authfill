@@ -11,11 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TutorialRouteRouteImport } from './routes/tutorial/route'
 import { Route as SetupRouteRouteImport } from './routes/setup/route'
+import { Route as SettingsRouteRouteImport } from './routes/settings/route'
 import { Route as EmailsRouteRouteImport } from './routes/emails/route'
 import { Route as AccountsRouteRouteImport } from './routes/accounts/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TutorialIndexRouteImport } from './routes/tutorial/index'
 import { Route as SetupIndexRouteImport } from './routes/setup/index'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as AccountsIndexRouteImport } from './routes/accounts/index'
 import { Route as TutorialCompleteRouteImport } from './routes/tutorial/complete'
 import { Route as SetupCustomRouteImport } from './routes/setup/custom'
@@ -30,6 +32,11 @@ const TutorialRouteRoute = TutorialRouteRouteImport.update({
 const SetupRouteRoute = SetupRouteRouteImport.update({
   id: '/setup',
   path: '/setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRouteRoute = SettingsRouteRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EmailsRouteRoute = EmailsRouteRouteImport.update({
@@ -56,6 +63,11 @@ const SetupIndexRoute = SetupIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SetupRouteRoute,
+} as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SettingsRouteRoute,
 } as any)
 const AccountsIndexRoute = AccountsIndexRouteImport.update({
   id: '/',
@@ -87,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/accounts': typeof AccountsRouteRouteWithChildren
   '/emails': typeof EmailsRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
   '/setup': typeof SetupRouteRouteWithChildren
   '/tutorial': typeof TutorialRouteRouteWithChildren
   '/emails/$id': typeof EmailsIdRoute
@@ -94,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/setup/custom': typeof SetupCustomRoute
   '/tutorial/complete': typeof TutorialCompleteRoute
   '/accounts/': typeof AccountsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/tutorial/': typeof TutorialIndexRoute
 }
@@ -105,6 +119,7 @@ export interface FileRoutesByTo {
   '/setup/custom': typeof SetupCustomRoute
   '/tutorial/complete': typeof TutorialCompleteRoute
   '/accounts': typeof AccountsIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/setup': typeof SetupIndexRoute
   '/tutorial': typeof TutorialIndexRoute
 }
@@ -113,6 +128,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/accounts': typeof AccountsRouteRouteWithChildren
   '/emails': typeof EmailsRouteRouteWithChildren
+  '/settings': typeof SettingsRouteRouteWithChildren
   '/setup': typeof SetupRouteRouteWithChildren
   '/tutorial': typeof TutorialRouteRouteWithChildren
   '/emails/$id': typeof EmailsIdRoute
@@ -120,6 +136,7 @@ export interface FileRoutesById {
   '/setup/custom': typeof SetupCustomRoute
   '/tutorial/complete': typeof TutorialCompleteRoute
   '/accounts/': typeof AccountsIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/setup/': typeof SetupIndexRoute
   '/tutorial/': typeof TutorialIndexRoute
 }
@@ -129,6 +146,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accounts'
     | '/emails'
+    | '/settings'
     | '/setup'
     | '/tutorial'
     | '/emails/$id'
@@ -136,6 +154,7 @@ export interface FileRouteTypes {
     | '/setup/custom'
     | '/tutorial/complete'
     | '/accounts/'
+    | '/settings/'
     | '/setup/'
     | '/tutorial/'
   fileRoutesByTo: FileRoutesByTo
@@ -147,6 +166,7 @@ export interface FileRouteTypes {
     | '/setup/custom'
     | '/tutorial/complete'
     | '/accounts'
+    | '/settings'
     | '/setup'
     | '/tutorial'
   id:
@@ -154,6 +174,7 @@ export interface FileRouteTypes {
     | '/'
     | '/accounts'
     | '/emails'
+    | '/settings'
     | '/setup'
     | '/tutorial'
     | '/emails/$id'
@@ -161,6 +182,7 @@ export interface FileRouteTypes {
     | '/setup/custom'
     | '/tutorial/complete'
     | '/accounts/'
+    | '/settings/'
     | '/setup/'
     | '/tutorial/'
   fileRoutesById: FileRoutesById
@@ -169,6 +191,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountsRouteRoute: typeof AccountsRouteRouteWithChildren
   EmailsRouteRoute: typeof EmailsRouteRouteWithChildren
+  SettingsRouteRoute: typeof SettingsRouteRouteWithChildren
   SetupRouteRoute: typeof SetupRouteRouteWithChildren
   TutorialRouteRoute: typeof TutorialRouteRouteWithChildren
 }
@@ -187,6 +210,13 @@ declare module '@tanstack/react-router' {
       path: '/setup'
       fullPath: '/setup'
       preLoaderRoute: typeof SetupRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/emails': {
@@ -223,6 +253,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/setup/'
       preLoaderRoute: typeof SetupIndexRouteImport
       parentRoute: typeof SetupRouteRoute
+    }
+    '/settings/': {
+      id: '/settings/'
+      path: '/'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof SettingsRouteRoute
     }
     '/accounts/': {
       id: '/accounts/'
@@ -286,6 +323,18 @@ const EmailsRouteRouteWithChildren = EmailsRouteRoute._addFileChildren(
   EmailsRouteRouteChildren,
 )
 
+interface SettingsRouteRouteChildren {
+  SettingsIndexRoute: typeof SettingsIndexRoute
+}
+
+const SettingsRouteRouteChildren: SettingsRouteRouteChildren = {
+  SettingsIndexRoute: SettingsIndexRoute,
+}
+
+const SettingsRouteRouteWithChildren = SettingsRouteRoute._addFileChildren(
+  SettingsRouteRouteChildren,
+)
+
 interface SetupRouteRouteChildren {
   SetupCompleteRoute: typeof SetupCompleteRoute
   SetupCustomRoute: typeof SetupCustomRoute
@@ -320,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountsRouteRoute: AccountsRouteRouteWithChildren,
   EmailsRouteRoute: EmailsRouteRouteWithChildren,
+  SettingsRouteRoute: SettingsRouteRouteWithChildren,
   SetupRouteRoute: SetupRouteRouteWithChildren,
   TutorialRouteRoute: TutorialRouteRouteWithChildren,
 }

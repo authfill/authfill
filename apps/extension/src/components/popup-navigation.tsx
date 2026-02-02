@@ -1,7 +1,7 @@
 import { Logo } from "@extension/components/logo";
 import { Link } from "@tanstack/react-router";
 import { Button } from "@ui/button";
-import { UsersIcon } from "lucide-react";
+import { CogIcon, UsersIcon } from "lucide-react";
 import browser from "webextension-polyfill";
 
 export function PopupNavigation() {
@@ -19,6 +19,15 @@ export function PopupNavigation() {
           size="icon"
         >
           <UsersIcon />
+        </Button>
+        <Button
+          onClick={() => {
+            window.open(`${browser.runtime.getURL("index.html#/settings")}`);
+          }}
+          variant="ghost"
+          size="icon"
+        >
+          <CogIcon />
         </Button>
       </div>
     </div>

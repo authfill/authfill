@@ -1,7 +1,16 @@
 import { addAccount, listAccounts } from "@extension/background/accounts";
 import { CustomAccount } from "@extension/background/accounts/providers/custom";
 import { id } from "@extension/utils/id";
+import { getStorage, getProxyUrls } from "@extension/utils/storage";
 import axios from "axios";
+
+async function getProxyHttpUrl(): Promise<string> {
+  const settings = await getStorage("proxySettings");
+  if (settings?.enabled && settings.baseUrl) {
+    return getProxyUrls(settings.baseUrl).httpUrl;
+  }
+  return import.meta.env.PUBLIC_PROXY_URL;
+}
 
 export async function authenticateCustom(data: {
   email: string;
@@ -20,16 +29,14 @@ export async function authenticateCustom(data: {
 
   if (data.email !== "test@authfill.com")
     try {
-      const res = await axios.post(
-        `${import.meta.env.PUBLIC_PROXY_URL}/imap/test`,
-        {
-          host: data.host,
-          port: data.port,
-          user: data.user,
-          secure: data.secure,
-          password: data.password,
-        },
-      );
+      const proxyUrl = await getProxyHttpUrl();
+      const res = await axios.post(`${proxyUrl}/imap/test`, {
+        host: data.host,
+        port: data.port,
+        user: data.user,
+        secure: data.secure,
+        password: data.password,
+      });
 
       if (!res.data.success)
         return {

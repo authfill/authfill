@@ -1,7 +1,7 @@
 import { generateOTP } from "@extension/background/utils/demo";
 import { addEmails } from "@extension/background/utils/email";
 import { Email } from "@extension/types/email";
-import { CustomAccountConfig } from "@extension/utils/storage";
+import { CustomAccountConfig, getStorage, getProxyUrls } from "@extension/utils/storage";
 
 type ConnectPayload = {
   host: string;
@@ -13,6 +13,14 @@ type ConnectPayload = {
 
 type OutgoingEvent = { event: "connect"; data: ConnectPayload };
 
+async function getProxyWssUrl(): Promise<string> {
+  const settings = await getStorage("proxySettings");
+  if (settings?.enabled && settings.baseUrl) {
+    return getProxyUrls(settings.baseUrl).wssUrl;
+  }
+  return import.meta.env.PUBLIC_WSS_URL;
+}
+
 export class CustomAccount {
   config: CustomAccountConfig;
   private ws: WebSocket | null = null;
@@ -21,7 +29,7 @@ export class CustomAccount {
     this.config = account;
   }
 
-  public connect() {
+  public async connect() {
     if (this.config.email === "test@authfill.com") {
       console.info(`[${this.config.id}] Test account detected`);
 
@@ -49,7 +57,8 @@ export class CustomAccount {
       return;
     }
 
-    this.ws = new WebSocket(`${import.meta.env.PUBLIC_WSS_URL}/imap`);
+    const wssUrl = await getProxyWssUrl();
+    this.ws = new WebSocket(`${wssUrl}/imap`);
 
     this.ws.addEventListener("open", () => {
       if (!this.ws) return;
