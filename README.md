@@ -4,6 +4,9 @@
 
 AuthFill is your one-click solution for verifying email addresses across the web. Say goodbye to searching your inbox for verification codes or links.
 
+> [!WARNING]  
+> We are currently in an open beta. You may encounter bugs.
+
 ## Features
 
 ### ✅ One-Click Email Verification
