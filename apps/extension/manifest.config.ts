@@ -33,19 +33,7 @@ export default defineManifest(async (env) => ({
     "128": "public/icons/icon-dark-128x128.png",
   },
   content_security_policy: {
-    extension_pages: `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' ${[
-      "https://autoconfig.thunderbird.net",
-      process.env.PUBLIC_WSS_URL,
-      process.env.PUBLIC_PROXY_URL,
-      ...(env.mode === "development"
-        ? [
-            process.env.PUBLIC_EXTENSION_URL,
-            process.env.PUBLIC_EXTENSION_WS_URL,
-          ]
-        : []),
-    ]
-      .filter(Boolean)
-      .join(" ")}`,
+    extension_pages: `script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' *`,
   },
   host_permissions:
     env.mode == "development" ? [`${process.env.PUBLIC_EXTENSION_URL}/*`] : [],
