@@ -42,7 +42,7 @@ The AuthFill proxy is a Cloudflare Worker that handles WebSocket connections for
    pnpm --filter proxy run deploy
    ```
 
-5. Note your deployed URL (e.g., `https://authfill-proxy.your-subdomain.workers.dev`)
+5. Note your deployed URL (e.g., `https://proxy.your-subdomain.workers.dev`)
 
 ### Option 2: Local Development
 
