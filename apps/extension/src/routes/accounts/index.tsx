@@ -2,9 +2,9 @@ import { ConfirmEmailDelete } from "@extension/components/emails/confirm-delete"
 import { useAccounts } from "@extension/hooks/use-accounts";
 import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { AccountConfig } from "@extension/utils/storage";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@ui/button";
-import { MailIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { CogIcon, MailIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/accounts/")({
@@ -26,6 +26,12 @@ function RouteComponent() {
         setOpen={() => setShowDelete(false)}
         selectedAccount={selectedAccount}
       />
+
+      <Link to="/settings" className="absolute right-4 top-4">
+        <Button size="icon" variant="ghost">
+          <CogIcon className="size-5" />
+        </Button>
+      </Link>
 
       <div className="flex max-w-[90vw] flex-col items-center sm:max-w-xs">
         <h1 className="text-center text-4xl font-bold tracking-tight">

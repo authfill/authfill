@@ -19,8 +19,21 @@ export interface CustomAccountConfig extends BaseAccountConfig {
 
 export type AccountConfig = CustomAccountConfig;
 
+export interface ProxySettings {
+  enabled: boolean;
+  baseUrl: string;
+}
+
 export interface Storage {
   accounts: AccountConfig[];
+  proxySettings?: ProxySettings;
+}
+
+export function getProxyUrls(baseUrl: string): { httpUrl: string; wssUrl: string } {
+  const url = new URL(baseUrl);
+  const httpUrl = baseUrl.replace(/\/$/, "");
+  const wssUrl = `${url.protocol === "https:" ? "wss:" : "ws:"}//${url.host}${url.pathname.replace(/\/$/, "")}`;
+  return { httpUrl, wssUrl };
 }
 
 export function setStorage<T extends keyof Storage>(key: T, data: Storage[T]) {

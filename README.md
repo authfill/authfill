@@ -78,8 +78,12 @@ pnpm run dev
 5. Press "Load Temporary Add-on"
 6. Navigate to the `apps/extension/dist` folder and select the `manifest.json` file inside apps/browser/build
 
+## Self-Hosting
+
+If you prefer to run your own proxy server, see the [Self-Hosting Guide](docs/SELF_HOSTING.md) for deployment instructions.
+
 ---
 
 \*AuthFill supports any email provider with IMAP access and plain-text password authentication. This includes Gmail, Outlook, and most custom domain email services.
 
-\*\*Due to a technical limitation of browser extensions, AuthFill has to temporarily proxy data through our servers to establish the IMAP connection and fetch your emails. However, your credentials and emails are never permanently stored and remain strictly confined to the processing step. Everything else stays local on your device. You can read more in our Privacy Policy at https://authfill.com/privacy
+\*\*Due to a technical limitation of browser extensions, AuthFill has to temporarily proxy data through our servers to establish the IMAP connection and fetch your emails. However, your credentials and emails are never permanently stored and remain strictly confined to the processing step. Everything else stays local on your device. You can also [self-host the proxy](docs/SELF_HOSTING.md) for full control. Read more in our Privacy Policy at https://authfill.com/privacy

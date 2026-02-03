@@ -1,7 +1,7 @@
 {
   "name": "proxy",
   "scripts": {
-    "dev": "cp ../../.env .dev.vars && wrangler dev --port 4000",
+    "dev": "cp ../../.env .dev.vars && wrangler dev --port 4000 --remote",
     "deploy": "wrangler deploy --minify",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings"
   },

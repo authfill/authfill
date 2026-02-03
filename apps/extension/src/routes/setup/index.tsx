@@ -1,6 +1,6 @@
 import { useDocumentTitle } from "@extension/hooks/use-document-title";
 import { useAppForm } from "@hooks/use-app-form";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import axios from "axios";
 import { xml2js } from "xml-js";
 import { z } from "zod";
@@ -124,6 +124,13 @@ function RouteComponent() {
             <form.SubmitButton>Connect</form.SubmitButton>
           </form.AppForm>
         </form>
+        <p className="text-muted-foreground mt-4 text-center text-sm">
+          Self-hosting?{" "}
+          <Link to="/settings" target="_blank" className="text-primary underline">
+            Configure your proxy
+          </Link>{" "}
+          first.
+        </p>
       </div>
     </div>
   );

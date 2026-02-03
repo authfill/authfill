@@ -15,6 +15,7 @@ const app = new Hono<AppBindings>();
 
 app.use("*", cors({ origin: "*" }));
 
+app.get("/health", (c) => c.json({ status: "ok" }));
 app.post("/imap/test", testImapConnection);
 app.get("/imap", handleImapWebSocket);
 
