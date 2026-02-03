@@ -68,11 +68,14 @@ To use a custom domain:
 
 ## Configuring the Extension
 
-1. Open the AuthFill extension popup
-2. Click the **gear icon** in the top-right corner
+**Important:** Configure your custom proxy *before* adding email accounts to ensure credentials are sent to your own server.
+
+1. Open the AuthFill extension and click **Add new Account**
+2. Click the **Configure your proxy** link at the bottom of the page
 3. Enable **Use Custom Proxy**
 4. Enter your proxy URL (e.g., `https://proxy.example.com`)
 5. Click **Save Settings** (the connection will be tested automatically)
+6. Return to the setup page and add your email account
 
 ## API Endpoints
 
