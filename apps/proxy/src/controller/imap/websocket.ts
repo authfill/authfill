@@ -8,7 +8,7 @@ import { upgradeWebSocket } from "hono/cloudflare-workers";
 import { WSContext } from "hono/ws";
 
 export const handleImapWebSocket: Handler<{ Bindings: Env }, "/imap"> =
-  upgradeWebSocket((c) => {
+  upgradeWebSocket(() => {
     let imap: CFImap | null = null;
     let pollInterval: ReturnType<typeof setInterval> | null = null;
 

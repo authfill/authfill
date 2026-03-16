@@ -22,7 +22,6 @@ function generateOTP() {
 }
 
 export function Demo() {
-  const [otp, setOTP] = useState(generateOTP());
   const [value, setValue] = useState("");
   const [popup, setPopup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,7 +38,6 @@ export function Demo() {
 
     setValue("");
     setPopup(false);
-    setOTP(otp);
     setSuccess(false);
     setLoading(false);
 

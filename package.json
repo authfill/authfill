@@ -4,6 +4,7 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
     "schema:dev": "prisma migrate dev --schema ./packages/schema/schema.prisma",
     "schema:studio": "prisma studio --schema ./packages/schema/schema.prisma",
     "schema:generate": "prisma generate --schema ./packages/schema/schema.prisma",

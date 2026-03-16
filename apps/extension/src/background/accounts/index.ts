@@ -1,9 +1,12 @@
 import { CustomAccount } from "@extension/background/accounts/providers/custom";
+import { MicroslopAccount } from "@extension/background/accounts/providers/microslop";
 import { getStorage, setStorage } from "@extension/utils/storage";
 
-let accounts: CustomAccount[] = [];
+type Account = CustomAccount | MicroslopAccount;
 
-export async function addAccount(account: CustomAccount) {
+let accounts: Account[] = [];
+
+export async function addAccount(account: Account) {
   accounts = await readAccounts();
 
   accounts.push(account);
@@ -29,6 +32,8 @@ export async function readAccounts() {
 
     if (index !== -1) {
       accounts[index].config = config;
+    } else if (config.type === "microslop") {
+      accounts.push(new MicroslopAccount(config));
     } else {
       accounts.push(new CustomAccount(config));
     }
@@ -43,6 +48,17 @@ export async function listAccounts() {
   return {
     accounts: accounts.map((account) => {
       const config = account.toConfig();
+
+      if (config.type === "microslop") {
+        return {
+          ...config,
+          credentials: {
+            ...config.credentials,
+            accessToken: undefined,
+            refreshToken: undefined,
+          },
+        };
+      }
 
       return {
         ...config,

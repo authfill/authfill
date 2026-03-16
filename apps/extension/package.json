@@ -10,6 +10,7 @@
     "build:chrome": "tsc -b && BROWSER=chrome vite build && rm -rf dist/.vite",
     "build:firefox": "tsc -b && BROWSER=firefox vite build && rm -rf dist/.vite",
     "lint": "eslint .",
+    "typecheck": "tsc -b",
     "preview": "vite preview"
   },
   "dependencies": {

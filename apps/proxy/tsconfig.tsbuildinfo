@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/controller/imap/test.ts","./src/controller/imap/websocket.ts","./src/handlers/websocket.ts","./src/services/imap.ts","./src/types/index.ts","./src/utils/decode-quoted-printable.ts","./src/utils/email-formatter.ts"],"version":"5.8.3"}

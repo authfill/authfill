@@ -24,6 +24,7 @@ export default defineManifest(async (env) => ({
     "storage",
     "tabs",
     "notifications",
+    "identity",
     ...(process.env.BROWSER === "firefox" ? ["clipboardWrite"] : []),
   ],
   icons: {

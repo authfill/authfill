@@ -1,12 +1,13 @@
 import { deleteAccount, listAccounts } from "@extension/background/accounts";
 import { authenticateCustom } from "@extension/background/auth/custom";
+import { authenticateMicroslop } from "@extension/background/auth/microslop";
 import { startDemo } from "@extension/background/utils/demo";
 import { getEmail } from "@extension/background/utils/email";
 import { showNotification } from "@extension/background/utils/notification";
 import {
+  getProxyUrls,
   getStorage,
   setStorage,
-  getProxyUrls,
   type ProxySettings,
 } from "@extension/utils/storage";
 import axios from "axios";
@@ -16,6 +17,8 @@ browser.runtime.onMessage.addListener(async (payload: any) => {
   switch (payload.event) {
     case "auth.custom":
       return await authenticateCustom(payload.data);
+    case "auth.microslop":
+      return await authenticateMicroslop(payload.data);
     case "notification.show":
       return await showNotification(payload.data);
     case "accounts.list":

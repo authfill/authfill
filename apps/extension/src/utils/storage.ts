@@ -17,7 +17,18 @@ export interface CustomAccountConfig extends BaseAccountConfig {
   };
 }
 
-export type AccountConfig = CustomAccountConfig;
+export interface MicroslopAccountConfig extends BaseAccountConfig {
+  type: "microslop";
+  credentials: {
+    type: "OAUTH2";
+    clientId: string;
+    accessToken: string;
+    refreshToken: string;
+    tokenExpiry: number;
+  };
+}
+
+export type AccountConfig = CustomAccountConfig | MicroslopAccountConfig;
 
 export interface ProxySettings {
   enabled: boolean;
@@ -29,7 +40,10 @@ export interface Storage {
   proxySettings?: ProxySettings;
 }
 
-export function getProxyUrls(baseUrl: string): { httpUrl: string; wssUrl: string } {
+export function getProxyUrls(baseUrl: string): {
+  httpUrl: string;
+  wssUrl: string;
+} {
   const url = new URL(baseUrl);
   const httpUrl = baseUrl.replace(/\/$/, "");
   const wssUrl = `${url.protocol === "https:" ? "wss:" : "ws:"}//${url.host}${url.pathname.replace(/\/$/, "")}`;

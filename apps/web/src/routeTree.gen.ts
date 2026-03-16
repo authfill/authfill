@@ -10,13 +10,19 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as legalRouteRouteImport } from './routes/(legal)/route'
+import { Route as guidesRouteRouteImport } from './routes/(guides)/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as legalTermsRouteImport } from './routes/(legal)/terms'
 import { Route as legalPrivacyRouteImport } from './routes/(legal)/privacy'
 import { Route as legalImprintRouteImport } from './routes/(legal)/imprint'
+import { Route as guidesMicrosoftOauthSetupRouteImport } from './routes/(guides)/microsoft-oauth-setup'
 
 const legalRouteRoute = legalRouteRouteImport.update({
   id: '/(legal)',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const guidesRouteRoute = guidesRouteRouteImport.update({
+  id: '/(guides)',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -39,15 +45,23 @@ const legalImprintRoute = legalImprintRouteImport.update({
   path: '/imprint',
   getParentRoute: () => legalRouteRoute,
 } as any)
+const guidesMicrosoftOauthSetupRoute =
+  guidesMicrosoftOauthSetupRouteImport.update({
+    id: '/microsoft-oauth-setup',
+    path: '/microsoft-oauth-setup',
+    getParentRoute: () => guidesRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof legalRouteRouteWithChildren
+  '/microsoft-oauth-setup': typeof guidesMicrosoftOauthSetupRoute
   '/imprint': typeof legalImprintRoute
   '/privacy': typeof legalPrivacyRoute
   '/terms': typeof legalTermsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof legalRouteRouteWithChildren
+  '/microsoft-oauth-setup': typeof guidesMicrosoftOauthSetupRoute
   '/imprint': typeof legalImprintRoute
   '/privacy': typeof legalPrivacyRoute
   '/terms': typeof legalTermsRoute
@@ -55,20 +69,24 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/(guides)': typeof guidesRouteRouteWithChildren
   '/(legal)': typeof legalRouteRouteWithChildren
+  '/(guides)/microsoft-oauth-setup': typeof guidesMicrosoftOauthSetupRoute
   '/(legal)/imprint': typeof legalImprintRoute
   '/(legal)/privacy': typeof legalPrivacyRoute
   '/(legal)/terms': typeof legalTermsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/imprint' | '/privacy' | '/terms'
+  fullPaths: '/' | '/microsoft-oauth-setup' | '/imprint' | '/privacy' | '/terms'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/imprint' | '/privacy' | '/terms'
+  to: '/' | '/microsoft-oauth-setup' | '/imprint' | '/privacy' | '/terms'
   id:
     | '__root__'
     | '/'
+    | '/(guides)'
     | '/(legal)'
+    | '/(guides)/microsoft-oauth-setup'
     | '/(legal)/imprint'
     | '/(legal)/privacy'
     | '/(legal)/terms'
@@ -76,6 +94,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  guidesRouteRoute: typeof guidesRouteRouteWithChildren
   legalRouteRoute: typeof legalRouteRouteWithChildren
 }
 
@@ -86,6 +105,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof legalRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(guides)': {
+      id: '/(guides)'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof guidesRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -116,8 +142,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof legalImprintRouteImport
       parentRoute: typeof legalRouteRoute
     }
+    '/(guides)/microsoft-oauth-setup': {
+      id: '/(guides)/microsoft-oauth-setup'
+      path: '/microsoft-oauth-setup'
+      fullPath: '/microsoft-oauth-setup'
+      preLoaderRoute: typeof guidesMicrosoftOauthSetupRouteImport
+      parentRoute: typeof guidesRouteRoute
+    }
   }
 }
+
+interface guidesRouteRouteChildren {
+  guidesMicrosoftOauthSetupRoute: typeof guidesMicrosoftOauthSetupRoute
+}
+
+const guidesRouteRouteChildren: guidesRouteRouteChildren = {
+  guidesMicrosoftOauthSetupRoute: guidesMicrosoftOauthSetupRoute,
+}
+
+const guidesRouteRouteWithChildren = guidesRouteRoute._addFileChildren(
+  guidesRouteRouteChildren,
+)
 
 interface legalRouteRouteChildren {
   legalImprintRoute: typeof legalImprintRoute
@@ -137,6 +182,7 @@ const legalRouteRouteWithChildren = legalRouteRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  guidesRouteRoute: guidesRouteRouteWithChildren,
   legalRouteRoute: legalRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport

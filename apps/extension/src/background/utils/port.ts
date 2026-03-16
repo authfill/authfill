@@ -30,7 +30,9 @@ export async function connectPort(id: string, runtime: browser.Runtime.Port) {
     account.connect();
   }
 
-  browser.runtime.sendMessage({ event: "popup.opened" });
+  browser.runtime.sendMessage({ event: "popup.opened" }).catch(() => {
+    // No listeners — popup may have closed (e.g. during OAuth flow)
+  });
 
   return port;
 }
